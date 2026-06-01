@@ -62,7 +62,6 @@ def get_current_user_id(token: str = Depends(oauth2_scheme)):
         raise credentials_exception
 
 # --- EVENTOS DE INICIALIZAÇÃO ---
-# --- EVENTOS DE INICIALIZAÇÃO ---
 @app.on_event("startup")
 def on_startup():
     database.init_db()
@@ -70,7 +69,6 @@ def on_startup():
     
     # Popular dados iniciais de teste se o banco de produção estiver limpo
     if not db.query(database.User).first():
-        # Criamos o usuário inicial diretamente com os créditos de teste
         test_user = database.User(
             name="Estudante Nota 1000", 
             email="aluno@enem.com", 
@@ -87,7 +85,7 @@ def on_startup():
         db.add(test_user)
         db.add(test_theme)
         db.commit()
-        print("🚀 Banco de dados inicializado com dados de teste com sucesso!")
+        print("🚀 Banco de dados de produção limpo e inicializado com sucesso!")
 
 # --- SCHEMAS DE VALIDAÇÃO DE ENTRADA (PYDANTIC) ---
 class UserCreate(BaseModel):
