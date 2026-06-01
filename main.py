@@ -62,29 +62,32 @@ def get_current_user_id(token: str = Depends(oauth2_scheme)):
         raise credentials_exception
 
 # --- EVENTOS DE INICIALIZAÇÃO ---
+# --- EVENTOS DE INICIALIZAÇÃO ---
 @app.on_event("startup")
 def on_startup():
     database.init_db()
     db = next(database.get_db())
     
-    # Popular dados iniciais de teste se o banco estiver limpo
+    # Popular dados iniciais de teste se o banco de produção estiver limpo
     if not db.query(database.User).first():
-        hashed_password = pwd_context.hash("senha123")
+        # Criamos o usuário inicial diretamente com os créditos de teste
         test_user = database.User(
             name="Estudante Nota 1000", 
             email="aluno@enem.com", 
             plan_type="FREE", 
             credits=3
         )
-        # Em produção, salvaríamos a senha hash no campo correto
+        
         test_theme = database.Theme(
             title="O estigma associado às doenças mentais na sociedade brasileira",
             context="Textos motivadores sobre a persistência do preconceito contra distúrbios psíquicos...",
             banca="ENEM"
         )
+        
         db.add(test_user)
         db.add(test_theme)
         db.commit()
+        print("🚀 Banco de dados inicializado com dados de teste com sucesso!")
 
 # --- SCHEMAS DE VALIDAÇÃO DE ENTRADA (PYDANTIC) ---
 class UserCreate(BaseModel):
