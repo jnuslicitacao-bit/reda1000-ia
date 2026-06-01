@@ -97,6 +97,37 @@ class EssaySubmission(BaseModel):
     theme_id: int
     content: str
 
+class ThemeCreate(BaseModel):
+    title: str
+    context: str
+    banca: str  # 'ENEM', 'FUVEST', 'CONCURSOS'
+
+
+# --- ROTAS DE GERENCIAMENTO DE TEMAS ---
+
+@app.post("/api/themes", status_code=201)
+def create_new_theme(theme_in: ThemeCreate, db: Session = Depends(database.get_db)):
+    """
+    Rota para cadastrar novos temas de redação no banco de dados.
+    """
+    new_theme = database.Theme(
+        title=theme_in.title,
+        context=theme_in.context,
+        banca=theme_in.banca
+    )
+    db.add(new_theme)
+    db.commit()
+    db.refresh(new_theme)
+    return {"message": "Tema cadastrado com sucesso!", "theme_id": new_theme.id}
+
+@app.get("/api/themes")
+def list_active_themes(db: Session = Depends(database.get_db)):
+    """
+    Rota utilizada pelo frontend para listar e popular dinamicamente o seletor de propostas.
+    """
+    themes = db.query(database.Theme).all()
+    return [{"id": t.id, "title": t.title, "banca": t.banca} for t in themes]
+
 
 # --- ROTAS DE AUTENTICAÇÃO ---
 
@@ -247,7 +278,7 @@ async def payment_webhook(request: Request, db: Session = Depends(database.get_d
                 user = db.query(database.User).filter(database.User.email == customer_email).first()
                 if user:
                     user.plan_type = "PREMIUM"
-                    user.credits = 99999 # Representação de créditos ilimitados para o motor
+                    user.credits = 99999  # Representação de créditos ilimitados para o motor
                     db.commit()
                     return {"status": "success", "message": f"Plano PREMIUM ativado para {customer_email}"}
                     
