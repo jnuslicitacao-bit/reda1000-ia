@@ -1,0 +1,11 @@
+# Ignorar ambiente virtual local
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Ignorar banco de dados local do SQLite
+*.db
+
+# IGNORAR CHAVES E CONFIGURAÇÕES SENSÍVEIS (OBRIGATÓRIO)
+.env
