@@ -5,7 +5,12 @@ import datetime
 # Configuração da página do Streamlit
 st.set_page_config(page_title="Reda1000IA - Micro SaaS", page_icon="📝", layout="wide")
 
-API_BASE_URL = "http://127.0.0.1:8000/api"
+# Lógica inteligente: usa o segredo da nuvem se existir, caso contrário usa o localhost
+if "API_BASE_URL" in st.secrets:
+    API_BASE_URL = st.secrets["API_BASE_URL"]
+else:
+    API_BASE_URL = "http://127.0.0.1:8000/api"
+
 THEME_ID = 1 # Tema padrão criado no banco do backend
 
 # Inicializa variáveis de estado de sessão do Streamlit
@@ -153,7 +158,7 @@ else:
                     
                     st.success(f"🎉 Redação Avaliada! Nota Final: {resultado['final_score']}/1000")
                     
-                    # Notas Detalhadas
+                    # Notas Detalhas
                     st.subheader("📋 Competências Avaliadas")
                     c_cols = st.columns(5)
                     competencias = resultado["competences"]
