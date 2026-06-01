@@ -11,8 +11,6 @@ if "API_BASE_URL" in st.secrets:
 else:
     API_BASE_URL = "http://127.0.0.1:8000/api"
 
-THEME_ID = 1 # Tema padrão criado no banco do backend
-
 # Inicializa variáveis de estado de sessão do Streamlit
 if "token" not in st.session_state:
     st.session_state.token = None
@@ -127,14 +125,30 @@ else:
 
     st.markdown("---")
 
-    # --- EDITOR DE TEXTO ---
-    st.subheader("✍️ Escrever Redação")
-    st.markdown("**Tema da Semana:** O estigma associado às doenças mentais na sociedade brasileira")
+    # --- SELETOR E EDITOR DE TEXTO ---
+    st.subheader("✍️ Espaço de Escrita")
+    
+    # Busca os temas cadastrados no banco de dados dinamicamente
+    try:
+        themes_res = requests.get(f"{API_BASE_URL}/themes")
+        if themes_res.status_code == 200:
+            lista_temas = themes_res.json()
+            # Mapeia o rótulo visual (Ex: "[ENEM] O estigma associado...") ao ID do tema correspondente
+            opcoes_temas = {f"[{t['banca']}] {t['title']}": t['id'] for t in lista_temas}
+            
+            tema_selecionado = st.selectbox("Escolha a proposta de redação:", list(opcoes_temas.keys()))
+            THEME_ID = opcoes_temas[tema_selecionado]
+        else:
+            THEME_ID = 1
+            st.markdown("**Tema padrão:** O estigma associado às doenças mentais na sociedade brasileira")
+    except:
+        THEME_ID = 1
+        st.markdown("**Tema padrão:** O estigma associado às doenças mentais na sociedade brasileira")
 
     essay_text = st.text_area(
         "Digite ou cole sua redação:",
         height=300,
-        placeholder="Desenvolva sua introdução, desenvolvimento e proposta de intervenção..."
+        placeholder="Desenvolva sua introdução, desenvolvimento e proposta de intervenção de acordo com o tema selecionado..."
     )
 
     palavras = len(essay_text.split()) if essay_text else 0
@@ -158,7 +172,7 @@ else:
                     
                     st.success(f"🎉 Redação Avaliada! Nota Final: {resultado['final_score']}/1000")
                     
-                    # Notas Detalhas
+                    # Notas Detalhadas
                     st.subheader("📋 Competências Avaliadas")
                     c_cols = st.columns(5)
                     competencias = resultado["competences"]
