@@ -11,10 +11,10 @@ if "API_BASE_URL" in st.secrets:
 else:
     API_BASE_URL = "http://127.0.0.1:8000/api"
 
-# URL da Stripe para onde o botão Premium vai redirecionar o usuário
-STRIPE_CHECKOUT_URL = "https://buy.stripe.com/https://buy.stripe.com/test_8x25kDfp73cqcfwdOQafS00"
+# CORREÇÃO DA STRIPE: URL limpa e sem duplicações de protocolo para evitar Access Denied
+STRIPE_CHECKOUT_URL = "https://buy.stripe.com/test_8x25kDfp73cqcfwdOQafS00"
 
-# CORREÇÃO DEFINITIVA: URL Raw que o GitHub permite acesso público sem Access Denied
+# URL Raw que o GitHub permite acesso público sem restrições
 LOGO_URL = "https://raw.githubusercontent.com/jnuslicitacao-bit/reda1000-ia/main/logo.png" 
 
 # Inicializa variáveis de estado de sessão do Streamlit
@@ -159,7 +159,7 @@ if "admin" in params and params["admin"] == "true":
             
             col_adm1, col_adm2, col_adm3 = st.columns(3)
             col_adm1.metric("Total de Usuários Cadastrados", "1.248 alunos", "+14% esta semana")
-            col_adm2.metric("Taxa de Conversão Viral (Indicações)", "42,3%", "Loop ativo")
+            col_adm2.metric("Taxa de Conversão Viral (Indicações)", "42,3%", "Loop active")
             col_adm3.metric("Faturamento Estimado (MRR)", "R$ 4.186,00", "Stripe Live")
             
             st.markdown("<br>", unsafe_allow_html=True)
