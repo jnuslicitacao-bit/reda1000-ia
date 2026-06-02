@@ -19,8 +19,10 @@ if "token" not in st.session_state:
     st.session_state.token = None
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
+if "tela_atual" not in st.session_state:
+    st.session_state.tela_atual = "login"  # Controla de forma limpa se mostra login ou cadastro
 
-# --- INJEÇÃO DE DESIGN PREMIUM CORRIGIDO (SEM RETÂNGULO VAZIO) ---
+# --- INJEÇÃO DE DESIGN PREMIUM COMPLETO (SEM COMPONENTE DE TABS) ---
 st.markdown(f"""
     <style>
         /* Estilização do fundo */
@@ -42,7 +44,7 @@ st.markdown(f"""
             object-fit: contain;
         }}
         
-        /* CARROSSEL DE PROVA SOCIAL AJUSTADO */
+        /* CARROSSEL DE PROVA SOCIAL */
         .ticker-wrapper {{
             width: 100%;
             overflow: hidden;
@@ -89,7 +91,7 @@ st.markdown(f"""
             margin: 0;
         }}
         
-        /* CARD DE LOGIN (ENCAPSULAMENTO LIMPO) */
+        /* CARD DE LOGIN SEGURO E SECO (SEM ABAS SUPERIORES) */
         .login-card {{
             background-color: #ffffff;
             padding: 40px;
@@ -99,7 +101,15 @@ st.markdown(f"""
             margin-top: 10px !important;
         }}
         
-        /* CUSTOMIZAÇÃO DO BOTÃO CENTRALIZADO */
+        /* LINHA DE ALTERNÂNCIA DE TELA (LINK CADASTRO) */
+        .toggle-link {{
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.95rem;
+            color: #4a5568;
+        }}
+        
+        /* BOTÃO PRINCIPAL FORMULÁRIO */
         div.stButton > button:first-child {{
             background: linear-gradient(45deg, #1e3c72, #2a5298);
             color: white;
@@ -133,10 +143,10 @@ st.markdown(f"""
 # --- TELA DE AUTENTICAÇÃO ---
 if not st.session_state.logged_in:
     
-    # 1. LOGO EM IMAGEM (Resgatada dinamicamente do GitHub)
+    # 1. LOGO EM IMAGEM
     st.markdown(f'''
         <div class="logo-container">
-            <img src="{LOGO_URL}" class="logo-img" alt="Reda1000IA Logo">
+            <img src="{'https://raw.githubusercontent.com/jnuslicitacao-bit/reda1000-ia/refs/heads/main/logo.png'}" class="logo-img" alt="Reda1000IA Logo">
         </div>
     ''', unsafe_allow_html=True)
     
@@ -144,6 +154,7 @@ if not st.session_state.logged_in:
     st.markdown('''
         <div class="ticker-wrapper">
             <div class="ticker">
+                <div class="ticker-item">🔥 <b>Isabella G.</b> garantiu <b>940</b> na redação do ESA!</div>
                 <div class="ticker-item">🎯 <b>Matheus S.</b> alcançou nota <b>980</b> no ENEM!</div>
                 <div class="ticker-item">🚀 <b>Ana Clara</b> subiu de 600 para <b>920</b> em 2 semanas!</div>
                 <div class="ticker-item">🔥 <b>João Pedro</b> garantiu <b>940</b> na redação do TJ-SP!</div>
@@ -151,7 +162,6 @@ if not st.session_state.logged_in:
                 <div class="ticker-item">🎯 <b>Lucas F.</b> nota <b>960</b> com nosso método!</div>
                 <div class="ticker-item">🚀 <b>Beatriz G.</b> nota <b>940</b> na Fuvest!</div>
                 <div class="ticker-item">🚀 <b>Carolina F.</b> subiu de 410 para <b>880</b> em 3 semanas!</div>
-                <div class="ticker-item">🔥 <b>Isabella G.</b> garantiu <b>940</b> na redação do ESA!</div>
                 <div class="ticker-item">✨ <b>Clara Amaral.</b> nota <b>850+</b> usando a Reda1000IA</div>
             </div>
         </div>
@@ -167,14 +177,15 @@ if not st.session_state.logged_in:
         </div>
     ''', unsafe_allow_html=True)
     
-    # Grid estrutural para centralizar o formulário
+    # Grid de Centralização
     _, col_central, _ = st.columns([1, 1.6, 1])
     
     with col_central:
-        tab_login, tab_cad = st.tabs(["🔒 Entrar", "✨ Criar Conta Grátis"])
-        
-        with tab_login:
+        # --- SUB-TELA DE LOGIN ---
+        if st.session_state.tela_atual == "login":
             st.markdown('<div class="login-card">', unsafe_allow_html=True)
+            st.markdown('<h3 style="text-align:center; color:#1e3c72; margin-top:0;">🔒 Entrar na Plataforma</h3>', unsafe_allow_html=True)
+            
             u_login = st.text_input("E-mail", key="u_log", placeholder="estudante@email.com")
             p_login = st.text_input("Senha", type="password", key="p_log", placeholder="Digite sua senha")
             
@@ -190,10 +201,20 @@ if not st.session_state.logged_in:
                         st.error("❌ E-mail ou senha inválidos.")
                 except:
                     st.error("⚠️ Servidor offline. Tente em instantes.")
+                    
             st.markdown('</div>', unsafe_allow_html=True)
             
-        with tab_cad:
+            # Link nativo para alternar para a tela de cadastro
+            st.markdown('<br>', unsafe_allow_html=True)
+            if st.button("Não tem uma conta? Cadastre-se gratuitamente aqui", key="ir_para_cadastro"):
+                st.session_state.tela_atual = "cadastro"
+                st.rerun()
+                
+        # --- SUB-TELA DE CADASTRO ---
+        elif st.session_state.tela_atual == "cadastro":
             st.markdown('<div class="login-card">', unsafe_allow_html=True)
+            st.markdown('<h3 style="text-align:center; color:#1e3c72; margin-top:0;">✨ Criar Conta Grátis</h3>', unsafe_allow_html=True)
+            
             n_cad = st.text_input("Nome", placeholder="Seu nome completo")
             e_cad = st.text_input("E-mail", placeholder="seu.email@escola.com")
             s_cad = st.text_input("Senha", type="password", placeholder="Crie uma senha forte")
@@ -204,7 +225,9 @@ if not st.session_state.logged_in:
                     try:
                         res = requests.post(f"{API_BASE_URL}/auth/register", json=payload)
                         if res.status_code == 201:
-                            st.success("✨ Conta criada! Volte para a aba 'Entrar'.")
+                            st.success("✨ Conta criada com sucesso!")
+                            st.session_state.tela_atual = "login"
+                            st.rerun()
                         else:
                             st.error(res.json().get("detail", "Erro no cadastro."))
                     except:
@@ -212,6 +235,12 @@ if not st.session_state.logged_in:
                 else:
                     st.warning("⚠️ Preencha todos os campos.")
             st.markdown('</div>', unsafe_allow_html=True)
+            
+            # Link nativo para voltar para a tela de login
+            st.markdown('<br>', unsafe_allow_html=True)
+            if st.button("Já tem uma conta? Clique aqui para entrar", key="ir_para_login"):
+                st.session_state.tela_atual = "login"
+                st.rerun()
 
 # --- ÁREA LOGADA DA PLATAFORMA ---
 else:
