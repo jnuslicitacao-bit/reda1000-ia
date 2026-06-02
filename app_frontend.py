@@ -17,7 +17,7 @@ if "token" not in st.session_state:
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
-# --- INJEÇÃO DE DESIGN PREMIUM COM PROVA SOCIAL E ESCASSEZ ---
+# --- INJEÇÃO DE DESIGN PREMIUM ATUALIZADO ---
 st.markdown("""
     <style>
         /* Estilização do fundo */
@@ -25,96 +25,120 @@ st.markdown("""
             background: linear-gradient(135deg, #f8f9fc 0%, #e2e8f0 100%);
         }
         
-        /* Container da LOGO */
+        /* LOGO COM DESIGN ATRAENTE E MODERNO */
         .logo-container {
             text-align: center;
-            padding-top: 20px;
-            margin-bottom: 0px;
+            padding: 25px 0 10px 0;
+            margin: 0;
         }
         .logo-text {
-            font-family: 'Trebuchet MS', sans-serif;
-            font-size: 3.5rem;
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 3.8rem;
             font-weight: 900;
-            letter-spacing: -2px;
+            letter-spacing: -1.5px;
             margin: 0;
-            background: linear-gradient(45deg, #1e3c72, #2a5298);
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            text-shadow: 2px 4px 10px rgba(0, 0, 0, 0.05);
         }
         .logo-dot {
-            color: #ff416c;
-            -webkit-text-fill-color: #ff416c;
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
         }
         
-        /* Frase de Escassez e Urgência */
-        .urgency-box {
-            background-color: #fff5f5;
-            border-left: 5px solid #ff416c;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            margin: 20px auto 40px auto;
-            max-width: 600px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
-        .urgency-text {
-            color: #c53030;
-            font-weight: 700;
-            font-size: 1.1rem;
-            margin: 0;
-        }
-        
-        /* Ticker de Prova Social (Alunos alcançando notas) */
+        /* CARROSSEL DE ALUNOS COM VELOCIDADE REDUZIDA E AJUSTE MOBILE */
         .ticker-wrapper {
             width: 100%;
             overflow: hidden;
-            background: #1e3c72;
-            padding: 10px 0;
-            margin-bottom: 30px;
+            background: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%);
+            padding: 12px 0;
+            margin-bottom: 25px;
             border-radius: 50px;
+            box-shadow: 0 4px 12px rgba(30, 60, 114, 0.15);
         }
         .ticker {
             display: flex;
             white-space: nowrap;
-            animation: ticker-animation 30s linear infinite;
+            animation: ticker-animation 55s linear infinite; /* Velocidade reduzida para melhor leitura */
         }
         .ticker-item {
             color: white;
-            padding: 0 40px;
-            font-size: 0.9rem;
+            padding: 0 45px;
+            font-size: 0.95rem;
             font-weight: 500;
         }
         .ticker-item b {
-            color: #deff9a; /* Cor de destaque para a nota */
+            color: #deff9a;
         }
         @keyframes ticker-animation {
             0% { transform: translateX(100%); }
             100% { transform: translateX(-100%); }
         }
         
-        /* Card de Autenticação */
+        /* AJUSTES PARA DISPOSITIVOS MÓVEIS (MOBILE) */
+        @media (max-width: 768px) {
+            .logo-text { font-size: 2.5rem; }
+            .ticker-item { padding: 0 20px; font-size: 0.8rem; }
+            .ticker-wrapper { border-radius: 20px; padding: 8px 0; }
+            .login-card { padding: 25px !important; }
+        }
+        
+        /* CAIXA DE ESCASSEZ */
+        .urgency-box {
+            background-color: #fff5f5;
+            border-left: 5px solid #ff416c;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 10px auto 30px auto;
+            max-width: 600px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
+        .urgency-text {
+            color: #c53030;
+            font-weight: 700;
+            font-size: 1.05rem;
+            margin: 0;
+        }
+        
+        /* AJUSTE PARA REMOVER RECTÂNGULO E ESPAÇO VAZIO EM CIMA DO LOGIN */
+        .stTabs [data-baseweb="tab-list"] {
+            gap: 10px;
+            justify-content: center;
+            border-bottom: none !important;
+        }
+        .stTabs [data-baseweb="tab-panel"] {
+            padding-top: 0px !important;
+        }
+        
+        /* CARD DE LOGIN SEGURO */
         .login-card {
             background-color: #ffffff;
             padding: 40px;
             border-radius: 24px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.06);
             border: 1px solid #edf2f7;
+            margin-top: 5px;
         }
         
-        /* Botão Customizado */
+        /* ALINHAMENTO DO BOTÃO ACESSAR MINHA ÁREA */
         div.stButton > button:first-child {
             background: linear-gradient(45deg, #1e3c72, #2a5298);
             color: white;
             border-radius: 12px;
             border: none;
-            padding: 15px;
+            padding: 14px;
             font-weight: bold;
             width: 100%;
-            transition: all 0.3s ease;
+            margin-top: 15px; /* Alinhamento e respiro ideal */
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
         div.stButton > button:first-child:hover {
-            transform: scale(1.02);
-            box-shadow: 0 10px 20px rgba(30, 60, 114, 0.2);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(30, 60, 114, 0.25);
         }
     </style>
 """, unsafe_allow_html=True)
@@ -123,14 +147,14 @@ st.markdown("""
 # --- TELA DE AUTENTICAÇÃO ---
 if not st.session_state.logged_in:
     
-    # 1. LOGO PROFISSIONAL
+    # 1. LOGO PROFISSIONAL RENOVADA
     st.markdown('''
         <div class="logo-container">
             <h1 class="logo-text">Reda1000<span class="logo-dot">IA</span></h1>
         </div>
     ''', unsafe_allow_html=True)
     
-    # 2. PROVA SOCIAL (TICKER ANIMADO)
+    # 2. CARROSSEL DE PROVA SOCIAL AJUSTADO (MAIS LENTO E ADAPTÁVEL)
     st.markdown('''
         <div class="ticker-wrapper">
             <div class="ticker">
@@ -144,7 +168,7 @@ if not st.session_state.logged_in:
         </div>
     ''', unsafe_allow_html=True)
     
-    # 3. FRASE DE ESCASSEZ E URGÊNCIA
+    # 3. CONTEXTO DE CONVERSÃO (URGÊNCIA)
     st.markdown('''
         <div class="urgency-box">
             <p class="urgency-text">
@@ -154,7 +178,7 @@ if not st.session_state.logged_in:
         </div>
     ''', unsafe_allow_html=True)
     
-    # Centralização do Formulário
+    # Grid de Centralização
     _, col_central, _ = st.columns([1, 1.6, 1])
     
     with col_central:
@@ -163,7 +187,7 @@ if not st.session_state.logged_in:
         with tab_login:
             st.markdown('<div class="login-card">', unsafe_allow_html=True)
             u_login = st.text_input("E-mail", key="u_log", placeholder="estudante@email.com")
-            p_login = st.text_input("Senha", type="password", key="p_log")
+            p_login = st.text_input("Senha", type="password", key="p_log", placeholder="Digite sua senha")
             
             if st.button("ACESSAR MINHA ÁREA", type="primary", key="btn_l"):
                 payload = {"username": u_login, "password": p_login}
@@ -181,9 +205,9 @@ if not st.session_state.logged_in:
             
         with tab_cad:
             st.markdown('<div class="login-card">', unsafe_allow_html=True)
-            n_cad = st.text_input("Nome")
-            e_cad = st.text_input("E-mail")
-            s_cad = st.text_input("Senha", type="password")
+            n_cad = st.text_input("Nome", placeholder="Seu nome completo")
+            e_cad = st.text_input("E-mail", placeholder="seu.email@escola.com")
+            s_cad = st.text_input("Senha", type="password", placeholder="Crie uma senha forte")
             
             if st.button("GARANTIR MINHA VAGA AGORA", key="btn_c"):
                 if n_cad and e_cad and s_cad:
@@ -204,7 +228,6 @@ if not st.session_state.logged_in:
 else:
     headers = {"Authorization": f"Bearer {st.session_state.token}"}
     
-    # Recuperação de dados do Dashboard
     try:
         response = requests.get(f"{API_BASE_URL}/dashboard", headers=headers)
         if response.status_code == 200:
