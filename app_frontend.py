@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 
 # ==============================================================================
-# 1. CONFIGURAÇÕES E ESTADOS DE SESSÃO
+# 1. CONFIGURAÇÕES GLOBAIS E ESTADOS
 # ==============================================================================
 st.set_page_config(page_title="Reda1000IA - Micro SaaS", page_icon="🚀", layout="wide")
 
@@ -22,31 +22,31 @@ if "tela_atual" not in st.session_state:
     st.session_state.tela_atual = "login"
 
 # ==============================================================================
-# 2. DESIGN DO ARQUIVO (CSS Puro isolado de lógica)
+# 2. DESIGN DO SISTEMA (Chaves duplicadas para não chocar com o Python)
 # ==============================================================================
 CSS_GLOBAL = """
 <style>
-    .stApp {
+    .stApp {{
         background: linear-gradient(135deg, #f8f9fc 0%, #e2e8f0 100%);
-    }
-    .logo-container {
+    }}
+    .logo-container {{
         text-align: center;
         padding: 20px 0 0px 0;
         margin: 0 auto;
         max-width: 450px;
-    }
-    .logo-img {
+    }}
+    .logo-img {{
         width: 100%;
         height: auto;
         max-height: 280px;
         object-fit: contain;
-    }
-    .logo-container-internal {
+    }}
+    .logo-container-internal {{
         text-align: left;
         padding: 10px 0;
         max-width: 180px;
-    }
-    .ticker-wrapper {
+    }}
+    .ticker-wrapper {{
         width: 100%;
         overflow: hidden;
         background: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%);
@@ -54,24 +54,24 @@ CSS_GLOBAL = """
         margin-bottom: 25px;
         border-radius: 50px;
         box-shadow: 0 4px 12px rgba(30, 60, 114, 0.15);
-    }
-    .ticker {
+    }}
+    .ticker {{
         display: flex;
         white-space: nowrap;
         animation: ticker-animation 55s linear infinite;
-    }
-    .ticker-item {
+    }}
+    .ticker-item {{
         color: white;
         padding: 0 45px;
         font-size: 0.95rem;
         font-weight: 500;
-    }
-    .ticker-item b { color: #deff9a; }
-    @keyframes ticker-animation {
-        0% { transform: translateX(100%); }
-        100% { transform: translateX(-100%); }
-    }
-    .urgency-box {
+    }}
+    .ticker-item b {{ color: #deff9a; }}
+    @keyframes ticker-animation {{
+        0% {{ transform: translateX(100%); }}
+        100% {{ transform: translateX(-100%); }}
+    }}
+    .urgency-box {{
         background-color: #fff5f5;
         border-left: 5px solid #ff416c;
         padding: 15px;
@@ -80,37 +80,37 @@ CSS_GLOBAL = """
         margin: 10px auto 30px auto;
         max-width: 600px;
         box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-    }
-    .urgency-text {
+    }}
+    .urgency-text {{
         color: #c53030;
         font-weight: 700;
         font-size: 1.05rem;
         margin: 0;
-    }
-    .login-card {
+    }}
+    .login-card {{
         background-color: #ffffff;
         padding: 40px;
         border-radius: 24px;
         box-shadow: 0 15px 35px rgba(0,0,0,0.06);
         border: 1px solid #edf2f7;
         margin-top: 10px !important;
-    }
-    .referral-box {
+    }}
+    .referral-box {{
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         padding: 25px;
         border-radius: 18px;
         box-shadow: 0 10px 20px rgba(118, 75, 162, 0.15);
         margin-bottom: 25px;
-    }
-    .pricing-grid {
+    }}
+    .pricing-grid {{
         display: flex;
         gap: 20px;
         justify-content: center;
         flex-wrap: wrap;
         margin-top: 20px;
-    }
-    .pricing-card {
+    }}
+    .pricing-card {{
         background: white;
         border-radius: 20px;
         padding: 30px;
@@ -119,9 +119,9 @@ CSS_GLOBAL = """
         box-shadow: 0 10px 30px rgba(0,0,0,0.05);
         border: 2px solid #e2e8f0;
         position: relative;
-    }
-    .pricing-card.featured { border-color: #2a5298; }
-    .badge-featured {
+    }}
+    .pricing-card.featured {{ border-color: #2a5298; }}
+    .badge-featured {{
         position: absolute;
         top: -15px;
         left: 50%;
@@ -133,24 +133,24 @@ CSS_GLOBAL = """
         font-size: 0.8rem;
         font-weight: bold;
         text-transform: uppercase;
-    }
-    .pricing-price {
+    }}
+    .pricing-price {{
         font-size: 2.2rem;
         font-weight: 800;
         color: #1a202c;
         margin: 15px 0;
-    }
-    .pricing-price small { font-size: 1rem; font-weight: 400; color: #718096; }
-    .pricing-features {
+    }}
+    .pricing-price small {{ font-size: 1rem; font-weight: 400; color: #718096; }}
+    .pricing-features {{
         list-style: none;
         padding: 0;
         margin: 20px 0;
         text-align: left;
         font-size: 0.9rem;
         color: #4a5568;
-    }
-    .pricing-features li { margin-bottom: 10px; }
-    div.stButton > button:first-child {
+    }}
+    .pricing-features li {{ margin-bottom: 10px; }}
+    div.stButton > button:first-child {{
         background: linear-gradient(45deg, #1e3c72, #2a5298);
         color: white;
         border-radius: 12px;
@@ -160,72 +160,76 @@ CSS_GLOBAL = """
         width: 100%;
         margin: 20px auto 0 auto;
         display: block;
-    }
+    }}
 </style>
 """
 
+# HTML Estático Base da tabela de preços (Substituição de URL via python nativo)
+HTML_TABELA_PRECOS_BASE = """
+<div class="pricing-grid">
+    <div class="pricing-card">
+        <h3 style="color:#2d3748; margin-bottom:5px;">Plano Mensal</h3>
+        <p style="color:#718096; font-size:0.85rem; margin-top:0;">Ideal para testar o método</p>
+        <div class="pricing-price">R$ 39,90<small>/mês</small></div>
+        <ul class="pricing-features">
+            <li>✓ Correções <b>Ilimitadas</b> de Redação</li>
+            <li>✓ Feedback por Competências</li>
+            <li>✓ Microaulas de Gramática IA</li>
+            <li>✓ Dashboard de Evolução Completo</li>
+        </ul>
+        <a href="STRIPE_URL_PLACEHOLDER" target="_blank" style="text-decoration:none;">
+            <button style="background:#4a5568; color:white; border:none; padding:12px; width:100%; border-radius:10px; font-weight:bold; cursor:pointer;">ASSINAR AGORA</button>
+        </a>
+    </div>
+    
+    <div class="pricing-card featured">
+        <div class="badge-featured">Mais Vendido / Economize 40%</div>
+        <h3 style="color:#1e3c72; margin-bottom:5px; padding-top:10px;">Plano Anual</h3>
+        <p style="color:#718096; font-size:0.85rem; margin-top:0;">Preparação Completa de Elite</p>
+        <div class="pricing-price">R$ 23,90<small>/mês</small></div>
+        <p style="color:#e53e3e; font-size:0.8rem; font-weight:bold; margin-top:-10px;">Cobrado anualmente por R$ 286,80</p>
+        <ul class="pricing-features">
+            <li>✓ <b>Tudo do plano Mensal</b></li>
+            <li>✓ Acesso Prioritário à API (Sem Filas)</li>
+            <li>✓ Trilha Personalizada de Aprendizado</li>
+            <li>✓ Biblioteca Completa de Repertórios</li>
+            <li>✓ Suporte do IA Tutor Premium 24/7</li>
+        </ul>
+        <a href="STRIPE_URL_PLACEHOLDER" target="_blank" style="text-decoration:none;">
+            <button style="background:linear-gradient(45deg, #ff416c, #ff4b2b); color:white; border:none; padding:14px; width:100%; border-radius:10px; font-weight:bold; cursor:pointer;">QUERO SER PREMIUM</button>
+        </a>
+    </div>
+    
+    <div class="pricing-card">
+        <h3 style="color:#2d3748; margin-bottom:5px;">Plano Trimestral</h3>
+        <p style="color:#718096; font-size:0.85rem; margin-top:0;">Foco Intensivo de Reta Final</p>
+        <div class="pricing-price">R$ 32,90<small>/mês</small></div>
+        <p style="color:#718096; font-size:0.8rem; margin-top:-10px;">Cobrado a cada 3 meses (R$ 98,70)</p>
+        <ul class="pricing-features">
+            <li>✓ Correções <b>Ilimitadas</b> de Redação</li>
+            <li>✓ Feedback por Competências</li>
+            <li>✓ Microaulas de Gramática IA</li>
+            <li>✓ Acesso à Biblioteca Básica</li>
+        </ul>
+        <a href="STRIPE_URL_PLACEHOLDER" target="_blank" style="text-decoration:none;">
+            <button style="background:#4a5568; color:white; border:none; padding:12px; width:100%; border-radius:10px; font-weight:bold; cursor:pointer;">ASSINAR AGORA</button>
+        </a>
+    </div>
+</div>
+<p style="text-align:center; color:#718096; font-size:0.85rem; margin-top:30px;">🔒 Pagamento 100% Seguro via Stripe. Cancele quando quiser sem multas.</p>
+"""
+
 # ==============================================================================
-# 3. COMPONENTES E FUNÇÕES DE TELA
+# 3. CONTROLADORES DE INTERFACE (Vila isolada de renderização)
 # ==============================================================================
 def render_pricing_table(stripe_url):
     st.markdown("---")
     st.markdown("<h2 style='text-align:center; color:#1e3c72;'>👑 Destrave o Seu Potencial Máximo Rumo ao 1000</h2>", unsafe_allow_html=True)
     st.markdown("<p style='text-align:center; color:#4a5568; margin-bottom:30px;'>Não arrisque seu futuro estudando com correções demoradas. Escolha o plano ideal e conquiste sua aprovação hoje.</p>", unsafe_allow_html=True)
     
-    html_content = f"""
-    <div class="pricing-grid">
-        <div class="pricing-card">
-            <h3 style="color:#2d3748; margin-bottom:5px;">Plano Mensal</h3>
-            <p style="color:#718096; font-size:0.85rem; margin-top:0;">Ideal para testar o método</p>
-            <div class="pricing-price">R$ 39,90<small>/mês</small></div>
-            <ul class="pricing-features">
-                <li>✓ Correções <b>Ilimitadas</b> de Redação</li>
-                <li>✓ Feedback por Competências</li>
-                <li>✓ Microaulas de Gramática IA</li>
-                <li>✓ Dashboard de Evolução Completo</li>
-            </ul>
-            <a href="{stripe_url}" target="_blank" style="text-decoration:none;">
-                <button style="background:#4a5568; color:white; border:none; padding:12px; width:100%; border-radius:10px; font-weight:bold; cursor:pointer;">ASSINAR AGORA</button>
-            </a>
-        </div>
-        
-        <div class="pricing-card featured">
-            <div class="badge-featured">Mais Vendido / Economize 40%</div>
-            <h3 style="color:#1e3c72; margin-bottom:5px; padding-top:10px;">Plano Anual</h3>
-            <p style="color:#718096; font-size:0.85rem; margin-top:0;">Preparação Completa de Elite</p>
-            <div class="pricing-price">R$ 23,90<small>/mês</small></div>
-            <p style="color:#e53e3e; font-size:0.8rem; font-weight:bold; margin-top:-10px;">Cobrado anualmente por R$ 286,80</p>
-            <ul class="pricing-features">
-                <li>✓ <b>Tudo do plano Mensal</b></li>
-                <li>✓ Acesso Prioritário à API (Sem Filas)</li>
-                <li>✓ Trilha Personalizada de Aprendizado</li>
-                <li>✓ Biblioteca Completa de Repertórios</li>
-                <li>✓ Suporte do IA Tutor Premium 24/7</li>
-            </ul>
-            <a href="{stripe_url}" target="_blank" style="text-decoration:none;">
-                <button style="background:linear-gradient(45deg, #ff416c, #ff4b2b); color:white; border:none; padding:14px; width:100%; border-radius:10px; font-weight:bold; cursor:pointer;">QUERO SER PREMIUM</button>
-            </a>
-        </div>
-        
-        <div class="pricing-card">
-            <h3 style="color:#2d3748; margin-bottom:5px;">Plano Trimestral</h3>
-            <p style="color:#718096; font-size:0.85rem; margin-top:0;">Foco Intensivo de Reta Final</p>
-            <div class="pricing-price">R$ 32,90<small>/mês</small></div>
-            <p style="color:#718096; font-size:0.8rem; margin-top:-10px;">Cobrado a cada 3 meses (R$ 98,70)</p>
-            <ul class="pricing-features">
-                <li>✓ Correções <b>Ilimitadas</b> de Redação</li>
-                <li>✓ Feedback por Competências</li>
-                <li>✓ Microaulas de Gramática IA</li>
-                <li>✓ Acesso à Biblioteca Básica</li>
-            </ul>
-            <a href="{stripe_url}" target="_blank" style="text-decoration:none;">
-                <button style="background:#4a5568; color:white; border:none; padding:12px; width:100%; border-radius:10px; font-weight:bold; cursor:pointer;">ASSINAR AGORA</button>
-            </a>
-        </div>
-    </div>
-    <p style="text-align:center; color:#718096; font-size:0.85rem; margin-top:30px;">🔒 Pagamento 100% Seguro via Stripe. Cancele quando quiser sem multas.</p>
-    """
-    st.markdown(html_content, unsafe_allow_html=True)
+    # Injeta a URL sem quebrar chaves de strings
+    html_final = HTML_TABELA_PRECOS_BASE.replace("STRIPE_URL_PLACEHOLDER", stripe_url)
+    st.markdown(html_final, unsafe_allow_html=True)
 
 def tela_admin():
     st.title("🛡️ Reda1000IA — Painel Admin Secreto")
@@ -248,7 +252,6 @@ def tela_admin():
         st.error("Senha incorreta. Acesso negado.")
 
 def tela_autenticacao():
-    # Renderiza a logo pura e limpa sem divs fantasmas
     st.markdown(f'<div class="logo-container"><img src="{LOGO_URL}" class="logo-img" alt="Logo"></div>', unsafe_allow_html=True)
     
     st.markdown('''
@@ -424,13 +427,13 @@ def tela_dashboard():
         render_pricing_table(STRIPE_CHECKOUT_URL)
 
 # ==============================================================================
-# 4. ORQUESTRADOR DE EXECUÇÃO CENTRAL (MAIN LOOP)
+# 4. ORQUESTRADOR DE EXECUÇÃO PRINCIPAL (MAIN LOOP)
 # ==============================================================================
 def main():
-    # Executa a injeção do CSS mestre estático de forma global no topo do script
+    # Injeta os estilos CSS limpos e isolados
     st.markdown(CSS_GLOBAL, unsafe_allow_html=True)
     
-    # Gerenciamento de rotas limpo por escopo sem vazamento de escopo condicional
+    # Roteador de visualização limpo por escopos funcionais
     if "admin" in st.query_params and st.query_params["admin"] == "true":
         tela_admin()
     elif not st.session_state.logged_in:
