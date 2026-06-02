@@ -14,7 +14,7 @@ else:
 # URL de entrega direta da imagem hospedada no seu repositório principal
 LOGO_URL = "https://raw.githubusercontent.com/jnuslicitacao-bit/reda1000-ia/main/logo.png" 
 
-# Inicializa variáveis de estado de sessão
+# Inicializa variáveis de estado de sessão do Streamlit
 if "token" not in st.session_state:
     st.session_state.token = None
 if "logged_in" not in st.session_state:
@@ -154,6 +154,7 @@ if not st.session_state.logged_in:
         <div class="ticker-wrapper">
             <div class="ticker">
                 <div class="ticker-item">🔥 <b>Isabella G.</b> garantiu <b>940</b> na redação do ESA!</div>
+                <div class="ticker-item">✨ <b>Clara Amaral.</b> nota <b>850+</b> usando a Reda1000IA</div>
                 <div class="ticker-item">🎯 <b>Matheus S.</b> alcançou nota <b>980</b> no ENEM!</div>
                 <div class="ticker-item">🚀 <b>Ana Clara</b> subiu de 600 para <b>920</b> em 2 semanas!</div>
                 <div class="ticker-item">🔥 <b>João Pedro</b> garantiu <b>940</b> na redação do TJ-SP!</div>
@@ -161,7 +162,7 @@ if not st.session_state.logged_in:
                 <div class="ticker-item">🎯 <b>Lucas F.</b> nota <b>960</b> com nosso método!</div>
                 <div class="ticker-item">🚀 <b>Beatriz G.</b> nota <b>940</b> na Fuvest!</div>
                 <div class="ticker-item">🚀 <b>Carolina F.</b> subiu de 410 para <b>880</b> em 3 semanas!</div>
-                <div class="ticker-item">✨ <b>Clara Amaral.</b> nota <b>850+</b> usando a Reda1000IA</div>
+                
             </div>
         </div>
     ''', unsafe_allow_html=True)
@@ -188,6 +189,7 @@ if not st.session_state.logged_in:
             p_login = st.text_input("Senha", type="password", key="p_log", placeholder="Digite sua senha")
             
             if st.button("ACESSAR MINHA ÁREA", type="primary", key="btn_l"):
+                # Correção: O OAuth2PasswordRequestForm espera dados via parâmetro data (Form-data)
                 payload = {"username": u_login, "password": p_login}
                 try:
                     res = requests.post(f"{API_BASE_URL}/auth/login", data=payload)
@@ -214,8 +216,6 @@ if not st.session_state.logged_in:
             n_cad = st.text_input("Nome", placeholder="Seu nome completo")
             e_cad = st.text_input("E-mail", placeholder="seu.email@escola.com")
             s_cad = st.text_input("Senha", type="password", placeholder="Crie uma senha forte")
-            
-            # NOVO: Input opcional de quem indicou o aluno (Gatilho Viral)
             ref_cad = st.text_input("Código de Indicação (Opcional)", placeholder="Ex: REDA1K")
             
             if st.button("GARANTIR MINHA VAGA AGORA", key="btn_c"):
@@ -224,12 +224,12 @@ if not st.session_state.logged_in:
                         "name": n_cad, 
                         "email": e_cad, 
                         "password": s_cad,
-                        "referred_by_code": ref_cad if ref_cad.strip() else None
+                        "referred_by_code": ref_cad.strip() if ref_cad.strip() else None
                     }
                     try:
                         res = requests.post(f"{API_BASE_URL}/auth/register", json=payload)
                         if res.status_code == 201:
-                            st.success("✨ Vaga garantida com sucesso! Faça o login na aba abaixo.")
+                            st.success("✨ Vaga garantida com sucesso! Faça o login usando seus dados.")
                             st.session_state.tela_atual = "login"
                             st.rerun()
                         else:
@@ -257,7 +257,7 @@ else:
             st.session_state.logged_in = False
             st.rerun()
     except:
-        st.error("Erro ao carregar o painel de dados.")
+        st.error("Erro crítico ao obter dados da API. Tente novamente.")
         st.stop()
 
     profile = dash_data.get("user_profile", {})
@@ -266,16 +266,14 @@ else:
     
     st.title("📝 Reda1000IA — Painel de Treinamento")
     
-    # Exposição de métricas do perfil superior
     c1, c2, c3, c4, c5 = st.columns([2, 1, 1, 2, 1])
-    with c1: st.metric("Estudante", profile.get("name"))
-    with c2: st.metric("XP Obtido", f"{profile.get('xp')} XP")
-    with c3: st.metric("🔥 Ofensiva", f"{profile.get('streak')}d")
+    with c1: st.metric("Estudante", profile.get("name", "Aluno"))
+    with c2: st.metric("XP Obtido", f"{profile.get('xp', 0)} XP")
+    with c3: st.metric("🔥 Ofensiva", f"{profile.get('streak', 0)}d")
     
-    # Tratamento visual do limite de créditos do plano
     is_premium = profile.get("plan") == "PREMIUM"
-    creditos_visiveis = "Ilimitados" if is_premium else f"{profile.get('credits')} rest."
-    with c4: st.metric("Plano Ativo", profile.get("plan"), creditos_visiveis)
+    creditos_visiveis = "Ilimitados" if is_premium else f"{profile.get('credits', 0)} rest."
+    with c4: st.metric("Plano Ativo", profile.get("plan", "FREE"), creditos_visiveis)
     with c5:
         if st.button("Sair da Conta"):
             st.session_state.token = None
@@ -283,52 +281,44 @@ else:
             st.rerun()
 
     st.markdown("---")
-
-    # --- NOVO: SEÇÃO DE COMPARTILHAMENTO & LOOP VIRAL (INDICAR AMIGOS) ---
-    col_share_esq, col_share_dir = st.columns(2)
     
+    col_share_esq, col_share_dir = st.columns(2)
     with col_share_esq:
         st.markdown(f"""
             <div class="referral-box">
                 <h4 style="margin-top:0;color:white;">🚀 Ganhe Correções Extras Grátis!</h4>
-                <p style="font-size:0.95rem;">Compartilhe o seu código abaixo com amigos. Quando eles se cadastrarem, 
-                você ganha <b>+1 crédito de redação bônus</b> na hora!</p>
-                <p style="font-size:1.1rem; background:rgba(255,255,255,0.2); padding:8px; border-radius:8px; text-align:center; font-weight:bold; letter-spacing:2px;">
-                    SEU CÓDIGO: {profile.get('my_referral_code')}
+                <p>Compartilhe seu código. Quando se cadastrarem, você ganha <b>+1 crédito</b>!</p>
+                <p style="font-size:1.1rem; background:rgba(255,255,255,0.2); padding:8px; border-radius:8px; text-align:center; font-weight:bold;">
+                    SEU CÓDIGO: {profile.get('my_referral_code', '---')}
                 </p>
             </div>
         """, unsafe_allow_html=True)
         
     with col_share_dir:
         st.subheader("📢 Compartilhar sua Evolução")
-        st.caption("Clique abaixo para copiar a sua mensagem de sucesso e postar nos seus grupos de estudos ou redes!")
-        st.code(share_marketing.get("copy_text"), language="text")
+        st.code(share_marketing.get("copy_text", "Treinando redação na Reda1000IA!"), language="text")
         if st.button("Copiar Texto de Sucesso"):
-            st.toast("Texto copiado para a área de transferência!", icon="📋")
+            st.toast("Texto copiado!", icon="📋")
 
     st.markdown("---")
     st.subheader("📊 Gráfico de Desempenho")
-    st.info(metrics.get("status_message"))
+    st.info(metrics.get("status_message", "Acompanhe suas notas"))
     
     m1, m2, m3 = st.columns(3)
-    m1.metric("Média das Notas", metrics.get("average_score"))
-    m2.metric("Redações Corrigidas", metrics.get("total_essays"))
-    m3.metric("Meta de Corte", metrics.get("target_score"))
+    m1.metric("Média das Notas", metrics.get("average_score", 0))
+    m2.metric("Redações Corrigidas", metrics.get("total_essays", 0))
+    m3.metric("Meta de Corte", metrics.get("target_score", 900))
         
     history = dash_data.get("history", [])
     if history:
         st.line_chart([e["score"] for e in history])
 
     st.markdown("---")
-
-    # LABORATÓRIO DE REDAÇÃO COM TRAVA DE BLOQUEIO SMART
     st.subheader("✍️ Laboratório de Redação")
     
-    # Se os créditos acabarem e ele for FREE, bloqueia a interface e induz ao Upgrade
     if not is_premium and profile.get("credits", 0) <= 0:
         st.error("🚨 Seus créditos de correção acabaram!")
-        st.warning("Para continuar evoluindo, indique amigos usando seu código acima ou assine o **Plano Premium** para ter correções ilimitadas e relatórios avançados.")
-        st.button("💳 MUDAR PARA O PREMIUM (Acesso Ilimitado)")
+        st.warning("Indique amigos para ganhar mais ou faça upgrade para o Premium.")
     else:
         try:
             themes_res = requests.get(f"{API_BASE_URL}/themes")
@@ -342,37 +332,17 @@ else:
         except:
             THEME_ID = 1
 
-        essay_text = st.text_area("Seu texto:", height=350, placeholder="Desenvolva sua introdução, argumentos e proposta de intervenção...")
+        essay_text = st.text_area("Seu texto:", height=350, placeholder="Escreva sua redação aqui...")
         
         if st.button("🚀 CORRIGIR AGORA", type="primary"):
             if essay_text.strip():
-                with st.spinner("Nossa IA está avaliando cada competência do seu texto..."):
-                    payload = {"theme_id": THEME_ID, "content": essay_text}
-                    res = requests.post(f"{API_BASE_URL}/essays/submit", json=payload, headers=headers)
-                    
-                    if res.status_code == 200:
-                        resultado = res.json()["resultado"]
-                        st.success(f"🎉 Redação Avaliada! Nota Final: {resultado['final_score']}/1000")
-                        
-                        st.subheader("📋 Desempenho por Competência")
-                        cols = st.columns(5)
-                        comps = resultado["competences"]
-                        for i, k in enumerate(["c1", "c2", "c3", "c4", "c5"]):
-                            with cols[i]:
-                                st.metric(f"Comp. {i+1}", f"{comps[k]['score']}/200")
-                                st.caption(comps[k]['feedback'])
-                        
-                        st.subheader("🔍 Microaulas de Correção")
-                        for idx, c in enumerate(resultado["corrections"]):
-                            with st.expander(f"Desvio: {c['original_text']}"):
-                                st.write(f"**Sugestão:** {c['corrected_text']}")
-                                st.info(f"💡 {c['micro_lesson']}")
-                                
-                        st.subheader("🎯 Plano de Evolução")
-                        ev = resultado["evolution_plan"]
-                        st.write(f"**Pontos Fortes:** {', '.join(ev['strengths'])}")
-                        st.warning(f"**Próximos Passos:** {ev['next_steps']}")
-                        st.info(f"📚 **Leitura:** {ev['recommended_reading']}")
-                        st.rerun()
-                    else:
-                        st.error(res.json().get("detail"))
+                with st.spinner("Analisando seu texto..."):
+                    try:
+                        res = requests.post(f"{API_BASE_URL}/essays/submit", json={"theme_id": THEME_ID, "content": essay_text}, headers=headers)
+                        if res.status_code == 200:
+                            st.success("🎉 Redação Avaliada com sucesso!")
+                            st.rerun()
+                        else:
+                            st.error(res.json().get("detail", "Erro ao processar."))
+                    except:
+                        st.error("Erro de comunicação com o servidor.")
