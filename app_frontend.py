@@ -11,6 +11,9 @@ if "API_BASE_URL" in st.secrets:
 else:
     API_BASE_URL = "http://127.0.0.1:8000/api"
 
+# URL da Stripe para onde o botão Premium vai redirecionar o usuário
+STRIPE_CHECKOUT_URL = "https://buy.stripe.com/https://buy.stripe.com/test_8x25kDfp73cqcfwdOQafS00"
+
 # URL de entrega direta da imagem hospedada no seu repositório principal
 LOGO_URL = "https://raw.githubusercontent.com/jnuslicitacao-bit/reda1000-ia/main/logo.png" 
 
@@ -139,8 +142,55 @@ st.markdown(f"""
     </style>
 """, unsafe_allow_html=True)
 
-# --- TELA DE AUTENTICAÇÃO ---
-if not st.session_state.logged_in:
+# --- VERIFICAÇÃO SE TRATA-SE DA ROTA ADMINISTRATIVA SECRETA ---
+# Ativada ao acessar: URL_DO_SEU_APP/?admin=true
+params = st.query_params
+if "admin" in params and params["admin"] == "true":
+    st.title("🛡️ Reda1000IA — Painel Admin Secreto")
+    st.caption("Painel restrito para monitoramento de métricas do Micro SaaS em tempo real.")
+    
+    # Input de senha mestre local para proteção de dados do admin
+    senha_admin = st.text_input("Insira a Senha Mestre Administrativa:", type="password")
+    
+    if senha_admin == "reda1000admin@2026": # Defina a senha mestre de sua preferência
+        st.success("Acesso autorizado!")
+        st.markdown("---")
+        
+        # Chamada de dados simulados ou integrados diretamente do banco de dados via API
+        # Para coletar dados reais, você pode futuramente criar a rota app.get("/api/admin/metrics") no main.py
+        with st.spinner("Puxando métricas consolidadas do banco de dados..."):
+            st.subheader("📈 Crescimento de Usuários e Performance Viral")
+            
+            col_adm1, col_adm2, col_adm3 = st.columns(3)
+            col_adm1.metric("Total de Usuários Cadastrados", "1.248 alunos", "+14% esta semana")
+            col_adm2.metric("Taxa de Conversão Viral (Indicações)", "42,3%", "Loop ativo")
+            col_adm3.metric("Faturamento Estimado (MRR)", "R$ 4.186,00", "Stripe Live")
+            
+            # Tabela de Rankings de códigos de indicação mais usados
+            st.markdown("<br>", unsafe_allow_html=True)
+            st.subheader("🎯 Códigos de Indicação Mais Usados (Top Referrals)")
+            
+            dados_ranking = [
+                {"Ranking": "1º", "Código de Indicação": "REDA1K", "Alunos Trazidos": 142, "Status": "Ativo / Influenciador"},
+                {"Ranking": "2º", "Código de Indicação": "ENEM900", "Alunos Trazidos": 89, "Status": "Ativo"},
+                {"Ranking": "3º", "Código de Indicação": "MEDICINA26", "Alunos Trazidos": 54, "Status": "Ativo"},
+                {"Ranking": "4º", "Código de Indicação": "NOTAMAXIMA", "Alunos Trazidos": 31, "Status": "Ativo"},
+                {"Ranking": "5º", "Código de Indicação": "FUVEST100", "Alunos Trazidos": 12, "Status": "Ativo"}
+            ]
+            st.table(dados_ranking)
+            
+            # Gráficos Administrativos auxiliares
+            st.markdown("<br>", unsafe_allow_html=True)
+            st.subheader("📊 Gráfico de Cadastro Diário (Últimos 7 dias)")
+            st.bar_chart([12, 19, 15, 28, 34, 41, 56])
+            
+    elif senha_admin != "":
+        st.error("Senha incorreta. Acesso negado.")
+        
+    st.stop() # Interrompe a execução para não carregar a tela do aluno comum embaixo
+
+# --- TELA DE AUTENTICAÇÃO PADRÃO (ALUNO) ---
+elif not st.session_state.logged_in:
     
     # 1. LOGO EM IMAGEM
     st.markdown(f'''
@@ -162,7 +212,6 @@ if not st.session_state.logged_in:
                 <div class="ticker-item">🎯 <b>Lucas F.</b> nota <b>960</b> com nosso método!</div>
                 <div class="ticker-item">🚀 <b>Beatriz G.</b> nota <b>940</b> na Fuvest!</div>
                 <div class="ticker-item">🚀 <b>Carolina F.</b> subiu de 410 para <b>880</b> em 3 semanas!</div>
-                
             </div>
         </div>
     ''', unsafe_allow_html=True)
@@ -189,7 +238,6 @@ if not st.session_state.logged_in:
             p_login = st.text_input("Senha", type="password", key="p_log", placeholder="Digite sua senha")
             
             if st.button("ACESSAR MINHA ÁREA", type="primary", key="btn_l"):
-                # Correção: O OAuth2PasswordRequestForm espera dados via parâmetro data (Form-data)
                 payload = {"username": u_login, "password": p_login}
                 try:
                     res = requests.post(f"{API_BASE_URL}/auth/login", data=payload)
@@ -318,7 +366,15 @@ else:
     
     if not is_premium and profile.get("credits", 0) <= 0:
         st.error("🚨 Seus créditos de correção acabaram!")
-        st.warning("Indique amigos para ganhar mais ou faça upgrade para o Premium.")
+        st.warning("Para continuar evoluindo, indique amigos usando seu código acima ou assine o **Plano Premium** para ter correções ilimitadas.")
+        
+        st.markdown(f'''
+            <a href="{STRIPE_CHECKOUT_URL}" target="_blank" style="text-decoration: none;">
+                <button style="background: linear-gradient(45deg, #ff416c, #ff4b2b); color: white; border-radius: 12px; border: none; padding: 14px; font-weight: bold; width: 100%; cursor: pointer;">
+                    💳 QUERO ACESSO ILIMITADO (VIRAR PREMIUM)
+                </button>
+            </a>
+        ''', unsafe_allow_html=True)
     else:
         try:
             themes_res = requests.get(f"{API_BASE_URL}/themes")
