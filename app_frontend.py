@@ -14,7 +14,7 @@ else:
 # URL da Stripe para onde o botão Premium vai redirecionar o usuário
 STRIPE_CHECKOUT_URL = "https://buy.stripe.com/https://buy.stripe.com/test_8x25kDfp73cqcfwdOQafS00"
 
-# CORREÇÃO DA LOGO: URL Raw Oficial do seu GitHub (Evita o erro de Access Denied)
+# CORREÇÃO DEFINITIVA: URL Raw que o GitHub permite acesso público sem Access Denied
 LOGO_URL = "https://raw.githubusercontent.com/jnuslicitacao-bit/reda1000-ia/main/logo.png" 
 
 # Inicializa variáveis de estado de sessão do Streamlit
