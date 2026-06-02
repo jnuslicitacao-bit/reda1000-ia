@@ -2,11 +2,10 @@ import streamlit as st
 import requests
 
 # ==============================================================================
-# 1. CONFIGURAÇÕES GLOBAIS E CONSTANTES
+# 1. CONFIGURAÇÕES E ESTADOS DE SESSÃO
 # ==============================================================================
 st.set_page_config(page_title="Reda1000IA - Micro SaaS", page_icon="🚀", layout="wide")
 
-# Gerenciamento inteligente de Endpoints (Evita Hardcoding)
 if "API_BASE_URL" in st.secrets:
     API_BASE_URL = st.secrets["API_BASE_URL"]
 else:
@@ -15,152 +14,158 @@ else:
 STRIPE_CHECKOUT_URL = "https://buy.stripe.com/test_8x25kDfp73cqcfwdOQafS00"
 LOGO_URL = "https://raw.githubusercontent.com/jnuslicitacao-bit/reda1000-ia/main/logo.png"
 
-# ==============================================================================
-# 2. INJEÇÃO DE ESTILOS CSS (Isolado do fluxo lógico do Python)
-# ==============================================================================
-def injetar_css_global():
-    st.markdown("""
-        <style>
-            .stApp {
-                background: linear-gradient(135deg, #f8f9fc 0%, #e2e8f0 100%);
-            }
-            .logo-container {
-                text-align: center;
-                padding: 20px 0 0px 0;
-                margin: 0 auto;
-                max-width: 450px;
-            }
-            .logo-img {
-                width: 100%;
-                height: auto;
-                max-height: 280px;
-                object-fit: contain;
-            }
-            .logo-container-internal {
-                text-align: left;
-                padding: 10px 0;
-                max-width: 180px;
-            }
-            .ticker-wrapper {
-                width: 100%;
-                overflow: hidden;
-                background: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%);
-                padding: 12px 0;
-                margin-bottom: 25px;
-                border-radius: 50px;
-                box-shadow: 0 4px 12px rgba(30, 60, 114, 0.15);
-            }
-            .ticker {
-                display: flex;
-                white-space: nowrap;
-                animation: ticker-animation 55s linear infinite;
-            }
-            .ticker-item {
-                color: white;
-                padding: 0 45px;
-                font-size: 0.95rem;
-                font-weight: 500;
-            }
-            .ticker-item b { color: #deff9a; }
-            @keyframes ticker-animation {
-                0% { transform: translateX(100%); }
-                100% { transform: translateX(-100%); }
-            }
-            .urgency-box {
-                background-color: #fff5f5;
-                border-left: 5px solid #ff416c;
-                padding: 15px;
-                border-radius: 12px;
-                text-align: center;
-                margin: 10px auto 30px auto;
-                max-width: 600px;
-                box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-            }
-            .urgency-text {
-                color: #c53030;
-                font-weight: 700;
-                font-size: 1.05rem;
-                margin: 0;
-            }
-            .login-card {
-                background-color: #ffffff;
-                padding: 40px;
-                border-radius: 24px;
-                box-shadow: 0 15px 35px rgba(0,0,0,0.06);
-                border: 1px solid #edf2f7;
-                margin-top: 10px !important;
-            }
-            .referral-box {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                color: white;
-                padding: 25px;
-                border-radius: 18px;
-                box-shadow: 0 10px 20px rgba(118, 75, 162, 0.15);
-                margin-bottom: 25px;
-            }
-            .pricing-grid {
-                display: flex;
-                gap: 20px;
-                justify-content: center;
-                flex-wrap: wrap;
-                margin-top: 20px;
-            }
-            .pricing-card {
-                background: white;
-                border-radius: 20px;
-                padding: 30px;
-                width: 320px;
-                text-align: center;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-                border: 2px solid #e2e8f0;
-                position: relative;
-            }
-            .pricing-card.featured { border-color: #2a5298; }
-            .badge-featured {
-                position: absolute;
-                top: -15px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: linear-gradient(45deg, #ff416c, #ff4b2b);
-                color: white;
-                padding: 4px 15px;
-                border-radius: 20px;
-                font-size: 0.8rem;
-                font-weight: bold;
-                text-transform: uppercase;
-            }
-            .pricing-price {
-                font-size: 2.2rem;
-                font-weight: 800;
-                color: #1a202c;
-                margin: 15px 0;
-            }
-            .pricing-price small { font-size: 1rem; font-weight: 400; color: #718096; }
-            .pricing-features {
-                list-style: none;
-                padding: 0;
-                margin: 20px 0;
-                text-align: left;
-                font-size: 0.9rem;
-                color: #4a5568;
-            }
-            .pricing-features li { margin-bottom: 10px; }
-            div.stButton > button:first-child {
-                background: linear-gradient(45deg, #1e3c72, #2a5298);
-                color: white;
-                border-radius: 12px;
-                border: none;
-                padding: 14px;
-                font-weight: bold;
-                width: 100%;
-                margin: 20px auto 0 auto;
-                display: block;
-            }
-        </style>
-    """, unsafe_allow_html=True)
+if "token" not in st.session_state:
+    st.session_state.token = None
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+if "tela_atual" not in st.session_state:
+    st.session_state.tela_atual = "login"
 
 # ==============================================================================
-# 3. VIEWS / COMPONENTES DE RENDERIZAÇÃO HTML
+# 2. DESIGN DO ARQUIVO (CSS Puro isolado de lógica)
+# ==============================================================================
+CSS_GLOBAL = """
+<style>
+    .stApp {
+        background: linear-gradient(135deg, #f8f9fc 0%, #e2e8f0 100%);
+    }
+    .logo-container {
+        text-align: center;
+        padding: 20px 0 0px 0;
+        margin: 0 auto;
+        max-width: 450px;
+    }
+    .logo-img {
+        width: 100%;
+        height: auto;
+        max-height: 280px;
+        object-fit: contain;
+    }
+    .logo-container-internal {
+        text-align: left;
+        padding: 10px 0;
+        max-width: 180px;
+    }
+    .ticker-wrapper {
+        width: 100%;
+        overflow: hidden;
+        background: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%);
+        padding: 12px 0;
+        margin-bottom: 25px;
+        border-radius: 50px;
+        box-shadow: 0 4px 12px rgba(30, 60, 114, 0.15);
+    }
+    .ticker {
+        display: flex;
+        white-space: nowrap;
+        animation: ticker-animation 55s linear infinite;
+    }
+    .ticker-item {
+        color: white;
+        padding: 0 45px;
+        font-size: 0.95rem;
+        font-weight: 500;
+    }
+    .ticker-item b { color: #deff9a; }
+    @keyframes ticker-animation {
+        0% { transform: translateX(100%); }
+        100% { transform: translateX(-100%); }
+    }
+    .urgency-box {
+        background-color: #fff5f5;
+        border-left: 5px solid #ff416c;
+        padding: 15px;
+        border-radius: 12px;
+        text-align: center;
+        margin: 10px auto 30px auto;
+        max-width: 600px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    }
+    .urgency-text {
+        color: #c53030;
+        font-weight: 700;
+        font-size: 1.05rem;
+        margin: 0;
+    }
+    .login-card {
+        background-color: #ffffff;
+        padding: 40px;
+        border-radius: 24px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.06);
+        border: 1px solid #edf2f7;
+        margin-top: 10px !important;
+    }
+    .referral-box {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 25px;
+        border-radius: 18px;
+        box-shadow: 0 10px 20px rgba(118, 75, 162, 0.15);
+        margin-bottom: 25px;
+    }
+    .pricing-grid {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 20px;
+    }
+    .pricing-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        width: 320px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        border: 2px solid #e2e8f0;
+        position: relative;
+    }
+    .pricing-card.featured { border-color: #2a5298; }
+    .badge-featured {
+        position: absolute;
+        top: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(45deg, #ff416c, #ff4b2b);
+        color: white;
+        padding: 4px 15px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    .pricing-price {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: #1a202c;
+        margin: 15px 0;
+    }
+    .pricing-price small { font-size: 1rem; font-weight: 400; color: #718096; }
+    .pricing-features {
+        list-style: none;
+        padding: 0;
+        margin: 20px 0;
+        text-align: left;
+        font-size: 0.9rem;
+        color: #4a5568;
+    }
+    .pricing-features li { margin-bottom: 10px; }
+    div.stButton > button:first-child {
+        background: linear-gradient(45deg, #1e3c72, #2a5298);
+        color: white;
+        border-radius: 12px;
+        border: none;
+        padding: 14px;
+        font-weight: bold;
+        width: 100%;
+        margin: 20px auto 0 auto;
+        display: block;
+    }
+</style>
+"""
+
+# ==============================================================================
+# 3. COMPONENTES E FUNÇÕES DE TELA
 # ==============================================================================
 def render_pricing_table(stripe_url):
     st.markdown("---")
@@ -222,9 +227,6 @@ def render_pricing_table(stripe_url):
     """
     st.markdown(html_content, unsafe_allow_html=True)
 
-# ==============================================================================
-# 4. SUB-CONTROLES DE TELAS (Módulos Isolados)
-# ==============================================================================
 def tela_admin():
     st.title("🛡️ Reda1000IA — Painel Admin Secreto")
     senha_admin = st.text_input("Insira a Senha Mestre Administrativa:", type="password")
@@ -246,7 +248,8 @@ def tela_admin():
         st.error("Senha incorreta. Acesso negado.")
 
 def tela_autenticacao():
-    st.markdown(f'<div class="logo-container"><img src="{LOGO_URL}" class="logo-img" alt="Reda1000IA Logo"></div>', unsafe_allow_html=True)
+    # Renderiza a logo pura e limpa sem divs fantasmas
+    st.markdown(f'<div class="logo-container"><img src="{LOGO_URL}" class="logo-img" alt="Logo"></div>', unsafe_allow_html=True)
     
     st.markdown('''
         <div class="ticker-wrapper">
@@ -421,12 +424,13 @@ def tela_dashboard():
         render_pricing_table(STRIPE_CHECKOUT_URL)
 
 # ==============================================================================
-# 5. EXECUÇÃO CENTRAL E CONTROLE DE FLUXO (Main Loop)
+# 4. ORQUESTRADOR DE EXECUÇÃO CENTRAL (MAIN LOOP)
 # ==============================================================================
 def main():
-    injetar_css_global()
+    # Executa a injeção do CSS mestre estático de forma global no topo do script
+    st.markdown(CSS_GLOBAL, unsafe_allow_html=True)
     
-    # Executa o chaveador de rotas de forma isolada
+    # Gerenciamento de rotas limpo por escopo sem vazamento de escopo condicional
     if "admin" in st.query_params and st.query_params["admin"] == "true":
         tela_admin()
     elif not st.session_state.logged_in:
