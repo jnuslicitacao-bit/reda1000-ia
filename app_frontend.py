@@ -373,7 +373,7 @@ else:
     metrics = dash_data.get("metrics", {})
     share_marketing = dash_data.get("share_marketing", {})
     
-    # 1. INJEÇÃO DA LOGO OFICIAL NO TOPO DA ÁREA LOGADA DO ALUNO
+    # INJEÇÃO DA LOGO OFICIAL NO TOPO DA ÁREA LOGADA DO ALUNO
     st.markdown(f'''
         <div class="logo-container-internal">
             <img src="{LOGO_URL}" style="width:100%; height:auto;" alt="Reda1000IA">
@@ -431,7 +431,7 @@ else:
 
     st.markdown("---")
     
-    # 2. LABORATÓRIO DE REDAÇÃO
+    # LABORATÓRIO DE REDAÇÃO
     st.subheader("✍️ Laboratório de Redação")
     
     if not is_premium and profile.get("credits", 0) <= 0:
@@ -458,20 +458,19 @@ else:
                     try:
                         res = requests.post(f"{API_BASE_URL}/essays/submit", json={"theme_id": THEME_ID, "content": essay_text}, headers=headers)
                         if res.status_code == 200:
-                            st.success("🎉 Redação Evaluada com sucesso!")
+                            st.success("🎉 Redação Avaliada com sucesso!")
                             st.rerun()
                         else:
                             st.error(res.json().get("detail", "Erro ao processar."))
                     except:
                         st.error("Erro de comunicação com o servidor.")
 
-    # 3. CARD COM OFERTAS IRRESISTÍVEIS (RODAPÉ DA PÁGINA FIXO PARA PLANOS GRATUITOS)
+    # CARDS COM OFERTAS IRRESISTÍVEIS (FECHADOS CORRETAMENTE COM CONCATENAÇÃO LIMPA)
     if not is_premium:
         st.markdown("---")
         st.markdown("<h2 style='text-align:center; color:#1e3c72;'>👑 Destrave o Seu Potencial Máximo Rumo ao 1000</h2>", unsafe_allow_html=True)
         st.markdown("<p style='text-align:center; color:#4a5568; margin-bottom:30px;'>Não arrisque seu futuro estudando com correções demoradas. Escolha o plano ideal e conquiste sua aprovação hoje.</p>", unsafe_allow_html=True)
         
-        # Injeção segura usando concatenação limpa de strings ao invés de interpolação direta com f-string estrutural
         html_pricing = '''
             <div class="pricing-grid">
                 <div class="pricing-card">
