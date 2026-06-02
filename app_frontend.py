@@ -11,46 +11,39 @@ if "API_BASE_URL" in st.secrets:
 else:
     API_BASE_URL = "http://127.0.0.1:8000/api"
 
+# COLE AQUI A URL DIRETA DA SUA LOGO (Hospedada no Imgur, GitHub, etc.)
+LOGO_URL = "URL_DA_SUA_IMAGEM_AQUI" 
+
 # Inicializa variáveis de estado de sessão
 if "token" not in st.session_state:
     st.session_state.token = None
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
-# --- INJEÇÃO DE DESIGN PREMIUM ATUALIZADO ---
-st.markdown("""
+# --- INJEÇÃO DE DESIGN PREMIUM COM LOGO E OTIMIZAÇÃO MOBILE ---
+st.markdown(f"""
     <style>
         /* Estilização do fundo */
-        .stApp {
+        .stApp {{
             background: linear-gradient(135deg, #f8f9fc 0%, #e2e8f0 100%);
-        }
+        }}
         
-        /* LOGO COM DESIGN ATRAENTE E MODERNO */
-        .logo-container {
+        /* CONTAINER DA LOGO EM IMAGEM */
+        .logo-container {{
             text-align: center;
-            padding: 25px 0 10px 0;
-            margin: 0;
-        }
-        .logo-text {
-            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: 3.8rem;
-            font-weight: 900;
-            letter-spacing: -1.5px;
-            margin: 0;
-            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 2px 4px 10px rgba(0, 0, 0, 0.05);
-        }
-        .logo-dot {
-            background: linear-gradient(45deg, #ff416c, #ff4b2b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 900;
-        }
+            padding: 20px 0 0px 0;
+            margin: 0 auto;
+            max-width: 450px;
+        }}
+        .logo-img {{
+            width: 100%;
+            height: auto;
+            max-height: 280px;
+            object-fit: contain;
+        }}
         
-        /* CARROSSEL DE ALUNOS COM VELOCIDADE REDUZIDA E AJUSTE MOBILE */
-        .ticker-wrapper {
+        /* CARROSSEL DE PROVA SOCIAL AJUSTADO */
+        .ticker-wrapper {{
             width: 100%;
             overflow: hidden;
             background: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%);
@@ -58,36 +51,28 @@ st.markdown("""
             margin-bottom: 25px;
             border-radius: 50px;
             box-shadow: 0 4px 12px rgba(30, 60, 114, 0.15);
-        }
-        .ticker {
+        }}
+        .ticker {{
             display: flex;
             white-space: nowrap;
-            animation: ticker-animation 55s linear infinite; /* Velocidade reduzida para melhor leitura */
-        }
-        .ticker-item {
+            animation: ticker-animation 55s linear infinite;
+        }}
+        .ticker-item {{
             color: white;
             padding: 0 45px;
             font-size: 0.95rem;
             font-weight: 500;
-        }
-        .ticker-item b {
+        }}
+        .ticker-item b {{
             color: #deff9a;
-        }
-        @keyframes ticker-animation {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
-        }
+        }}
+        @keyframes ticker-animation {{
+            0% {{ transform: translateX(100%); }}
+            100% {{ transform: translateX(-100%); }}
+        }}
         
-        /* AJUSTES PARA DISPOSITIVOS MÓVEIS (MOBILE) */
-        @media (max-width: 768px) {
-            .logo-text { font-size: 2.5rem; }
-            .ticker-item { padding: 0 20px; font-size: 0.8rem; }
-            .ticker-wrapper { border-radius: 20px; padding: 8px 0; }
-            .login-card { padding: 25px !important; }
-        }
-        
-        /* CAIXA DE ESCASSEZ */
-        .urgency-box {
+        /* BOX DE URGÊNCIA/ESCASSEZ */
+        .urgency-box {{
             background-color: #fff5f5;
             border-left: 5px solid #ff416c;
             padding: 15px;
@@ -96,36 +81,43 @@ st.markdown("""
             margin: 10px auto 30px auto;
             max-width: 600px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-        }
-        .urgency-text {
+        }}
+        .urgency-text {{
             color: #c53030;
             font-weight: 700;
             font-size: 1.05rem;
             margin: 0;
-        }
+        }}
         
-        /* AJUSTE PARA REMOVER RECTÂNGULO E ESPAÇO VAZIO EM CIMA DO LOGIN */
-        .stTabs [data-baseweb="tab-list"] {
+        /* REMOÇÃO COMPLETA DO RETÂNGULO VAZIO EM CIMA DO LOGIN */
+        .stTabs [data-baseweb="tab-list"] {{
             gap: 10px;
             justify-content: center;
             border-bottom: none !important;
-        }
-        .stTabs [data-baseweb="tab-panel"] {
+            padding: 0 !important;
+            margin-bottom: -10px !important;
+        }}
+        .stTabs [data-baseweb="tab"] {{
+            border: none !important;
+            box-shadow: none !important;
+        }}
+        .stTabs [data-baseweb="tab-panel"] {{
             padding-top: 0px !important;
-        }
+            margin-top: 0px !important;
+        }}
         
-        /* CARD DE LOGIN SEGURO */
-        .login-card {
+        /* CARD DE LOGIN */
+        .login-card {{
             background-color: #ffffff;
             padding: 40px;
             border-radius: 24px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.06);
             border: 1px solid #edf2f7;
-            margin-top: 5px;
-        }
+            margin-top: 0px !important;
+        }}
         
-        /* ALINHAMENTO DO BOTÃO ACESSAR MINHA ÁREA */
-        div.stButton > button:first-child {
+        /* CENTRALIZAÇÃO E DESIGN DO BOTÃO */
+        div.stButton > button:first-child {{
             background: linear-gradient(45deg, #1e3c72, #2a5298);
             color: white;
             border-radius: 12px;
@@ -133,13 +125,24 @@ st.markdown("""
             padding: 14px;
             font-weight: bold;
             width: 100%;
-            margin-top: 15px; /* Alinhamento e respiro ideal */
+            margin: 20px auto 0 auto; /* Centraliza no eixo do bloco */
+            display: block;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
-        div.stButton > button:first-child:hover {
+        }}
+        div.stButton > button:first-child:hover {{
             transform: translateY(-1px);
             box-shadow: 0 8px 20px rgba(30, 60, 114, 0.25);
-        }
+        }}
+
+        /* OTIMIZAÇÃO RIGOROSA PARA DISPOSITIVOS MÓVEIS (MOBILE) */
+        @media (max-width: 768px) {{
+            .logo-container {{ max-width: 280px; padding-top: 10px; }}
+            .ticker-item {{ padding: 0 15px; font-size: 0.75rem; }}
+            .ticker-wrapper {{ border-radius: 20px; padding: 6px 0; margin-bottom: 15px; }}
+            .urgency-box {{ padding: 10px; margin-bottom: 20px; }}
+            .urgency-text {{ font-size: 0.85rem; }}
+            .login-card {{ padding: 20px !important; border-radius: 16px; }}
+        }}
     </style>
 """, unsafe_allow_html=True)
 
@@ -147,14 +150,14 @@ st.markdown("""
 # --- TELA DE AUTENTICAÇÃO ---
 if not st.session_state.logged_in:
     
-    # 1. LOGO PROFISSIONAL RENOVADA
-    st.markdown('''
+    # 1. LOGO EM IMAGEM (Substituindo o texto antigo)
+    st.markdown(f'''
         <div class="logo-container">
-            <h1 class="logo-text">Reda1000<span class="logo-dot">IA</span></h1>
+            <img src="{'C:\Users\USER\Desktop\Reda1000IA\logo.png'}" class="logo-img" alt="Reda1000IA Logo">
         </div>
     ''', unsafe_allow_html=True)
     
-    # 2. CARROSSEL DE PROVA SOCIAL AJUSTADO (MAIS LENTO E ADAPTÁVEL)
+    # 2. CARROSSEL DE PROVA SOCIAL
     st.markdown('''
         <div class="ticker-wrapper">
             <div class="ticker">
@@ -164,6 +167,9 @@ if not st.session_state.logged_in:
                 <div class="ticker-item">✨ <b>Carla M.</b> nota <b>900+</b> usando a Reda1000IA</div>
                 <div class="ticker-item">🎯 <b>Lucas F.</b> nota <b>960</b> com nosso método!</div>
                 <div class="ticker-item">🚀 <b>Beatriz H.</b> nota <b>940</b> na Fuvest!</div>
+                <div class="ticker-item">✨ <b>Aline A.</b> nota <b>758+</b> usando a Reda1000IA</div>
+                <div class="ticker-item">🎯 <b>Isabella G.</b> subiu de 420 para <b>910</b> com nosso método!</div>
+                <div class="ticker-item">🚀 <b>Beatriz A.</b> nota <b>840</b> na Fuvest!</div>
             </div>
         </div>
     ''', unsafe_allow_html=True)
@@ -198,9 +204,9 @@ if not st.session_state.logged_in:
                         st.session_state.logged_in = True
                         st.rerun()
                     else:
-                        st.error("E-mail ou senha inválidos.")
+                        st.error("❌ E-mail ou senha inválidos.")
                 except:
-                    st.error("Servidor offline. Tente em instantes.")
+                    st.error("⚠️ Servidor offline. Tente em instantes.")
             st.markdown('</div>', unsafe_allow_html=True)
             
         with tab_cad:
@@ -215,13 +221,13 @@ if not st.session_state.logged_in:
                     try:
                         res = requests.post(f"{API_BASE_URL}/auth/register", json=payload)
                         if res.status_code == 201:
-                            st.success("Conta criada! Volte para a aba 'Entrar'.")
+                            st.success("✨ Conta criada! Volte para a aba 'Entrar'.")
                         else:
                             st.error(res.json().get("detail", "Erro no cadastro."))
                     except:
-                        st.error("Erro de conexão.")
+                        st.error("⚠️ Erro de conexão.")
                 else:
-                    st.warning("Preencha todos os campos.")
+                    st.warning("⚠️ Preencha todos os campos.")
             st.markdown('</div>', unsafe_allow_html=True)
 
 # --- ÁREA LOGADA ---
