@@ -20,17 +20,16 @@ if "token" not in st.session_state:
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 if "tela_atual" not in st.session_state:
-    st.session_state.tela_atual = "login"  # Controla de forma limpa se mostra login ou cadastro
+    st.session_state.tela_atual = "login"
 
-# --- INJEÇÃO DE DESIGN PREMIUM COMPLETO (SEM COMPONENTE DE TABS) ---
+# --- INJEÇÃO DE DESIGN PREMIUM COMPLETO ---
 st.markdown(f"""
     <style>
-        /* Estilização do fundo */
         .stApp {{
             background: linear-gradient(135deg, #f8f9fc 0%, #e2e8f0 100%);
         }}
         
-        /* CONTAINER DA LOGO EM IMAGEM */
+        /* CONTAINER DA LOGO */
         .logo-container {{
             text-align: center;
             padding: 20px 0 0px 0;
@@ -91,7 +90,7 @@ st.markdown(f"""
             margin: 0;
         }}
         
-        /* CARD DE LOGIN SEGURO E SECO (SEM ABAS SUPERIORES) */
+        /* CARD DE LOGIN E FORMULÁRIOS */
         .login-card {{
             background-color: #ffffff;
             padding: 40px;
@@ -101,12 +100,14 @@ st.markdown(f"""
             margin-top: 10px !important;
         }}
         
-        /* LINHA DE ALTERNÂNCIA DE TELA (LINK CADASTRO) */
-        .toggle-link {{
-            text-align: center;
-            margin-top: 20px;
-            font-size: 0.95rem;
-            color: #4a5568;
+        /* CAIXA DE CRESCIMENTO (REFERRAL) NA ÁREA LOGADA */
+        .referral-box {{
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 18px;
+            box-shadow: 0 10px 20px rgba(118, 75, 162, 0.15);
+            margin-bottom: 25px;
         }}
         
         /* BOTÃO PRINCIPAL FORMULÁRIO */
@@ -127,7 +128,6 @@ st.markdown(f"""
             box-shadow: 0 8px 20px rgba(30, 60, 114, 0.25);
         }}
 
-        /* OTIMIZAÇÃO COMPLETA PARA DISPOSITIVOS MÓVEIS (MOBILE) */
         @media (max-width: 768px) {{
             .logo-container {{ max-width: 280px; padding-top: 10px; }}
             .ticker-item {{ padding: 0 15px; font-size: 0.75rem; }}
@@ -139,14 +139,13 @@ st.markdown(f"""
     </style>
 """, unsafe_allow_html=True)
 
-
 # --- TELA DE AUTENTICAÇÃO ---
 if not st.session_state.logged_in:
     
     # 1. LOGO EM IMAGEM
     st.markdown(f'''
         <div class="logo-container">
-            <img src="{'https://raw.githubusercontent.com/jnuslicitacao-bit/reda1000-ia/refs/heads/main/logo.png'}" class="logo-img" alt="Reda1000IA Logo">
+            <img src="{LOGO_URL}" class="logo-img" alt="Reda1000IA Logo">
         </div>
     ''', unsafe_allow_html=True)
     
@@ -167,7 +166,7 @@ if not st.session_state.logged_in:
         </div>
     ''', unsafe_allow_html=True)
     
-    # 3. BOX DE URGÊNCIA E MARKETING DE ESCASSEZ
+    # 3. BOX DE URGÊNCIA
     st.markdown('''
         <div class="urgency-box">
             <p class="urgency-text">
@@ -177,7 +176,6 @@ if not st.session_state.logged_in:
         </div>
     ''', unsafe_allow_html=True)
     
-    # Grid de Centralização
     _, col_central, _ = st.columns([1, 1.6, 1])
     
     with col_central:
@@ -201,10 +199,8 @@ if not st.session_state.logged_in:
                         st.error("❌ E-mail ou senha inválidos.")
                 except:
                     st.error("⚠️ Servidor offline. Tente em instantes.")
-                    
             st.markdown('</div>', unsafe_allow_html=True)
             
-            # Link nativo para alternar para a tela de cadastro
             st.markdown('<br>', unsafe_allow_html=True)
             if st.button("Não tem uma conta? Cadastre-se gratuitamente aqui", key="ir_para_cadastro"):
                 st.session_state.tela_atual = "cadastro"
@@ -219,13 +215,21 @@ if not st.session_state.logged_in:
             e_cad = st.text_input("E-mail", placeholder="seu.email@escola.com")
             s_cad = st.text_input("Senha", type="password", placeholder="Crie uma senha forte")
             
+            # NOVO: Input opcional de quem indicou o aluno (Gatilho Viral)
+            ref_cad = st.text_input("Código de Indicação (Opcional)", placeholder="Ex: REDA1K")
+            
             if st.button("GARANTIR MINHA VAGA AGORA", key="btn_c"):
                 if n_cad and e_cad and s_cad:
-                    payload = {"name": n_cad, "email": e_cad, "password": s_cad}
+                    payload = {
+                        "name": n_cad, 
+                        "email": e_cad, 
+                        "password": s_cad,
+                        "referred_by_code": ref_cad if ref_cad.strip() else None
+                    }
                     try:
                         res = requests.post(f"{API_BASE_URL}/auth/register", json=payload)
                         if res.status_code == 201:
-                            st.success("✨ Conta criada com sucesso!")
+                            st.success("✨ Vaga garantida com sucesso! Faça o login na aba abaixo.")
                             st.session_state.tela_atual = "login"
                             st.rerun()
                         else:
@@ -233,10 +237,9 @@ if not st.session_state.logged_in:
                     except:
                         st.error("⚠️ Erro de conexão.")
                 else:
-                    st.warning("⚠️ Preencha todos os campos.")
+                    st.warning("⚠️ Preencha todos os campos obrigatórios.")
             st.markdown('</div>', unsafe_allow_html=True)
             
-            # Link nativo para voltar para a tela de login
             st.markdown('<br>', unsafe_allow_html=True)
             if st.button("Já tem uma conta? Clique aqui para entrar", key="ir_para_login"):
                 st.session_state.tela_atual = "login"
@@ -254,33 +257,63 @@ else:
             st.session_state.logged_in = False
             st.rerun()
     except:
-        st.error("Erro ao carregar o painel.")
+        st.error("Erro ao carregar o painel de dados.")
         st.stop()
 
     profile = dash_data.get("user_profile", {})
     metrics = dash_data.get("metrics", {})
+    share_marketing = dash_data.get("share_marketing", {})
     
-    st.title("📝 Reda1000IA — Área do Aluno")
+    st.title("📝 Reda1000IA — Painel de Treinamento")
     
+    # Exposição de métricas do perfil superior
     c1, c2, c3, c4, c5 = st.columns([2, 1, 1, 2, 1])
     with c1: st.metric("Estudante", profile.get("name"))
-    with c2: st.metric("XP", f"{profile.get('xp')}")
+    with c2: st.metric("XP Obtido", f"{profile.get('xp')} XP")
     with c3: st.metric("🔥 Ofensiva", f"{profile.get('streak')}d")
-    with c4: st.metric("Plano", profile.get("plan"), f"{profile.get('credits')} créditos")
+    
+    # Tratamento visual do limite de créditos do plano
+    is_premium = profile.get("plan") == "PREMIUM"
+    creditos_visiveis = "Ilimitados" if is_premium else f"{profile.get('credits')} rest."
+    with c4: st.metric("Plano Ativo", profile.get("plan"), creditos_visiveis)
     with c5:
-        if st.button("Sair"):
+        if st.button("Sair da Conta"):
             st.session_state.token = None
             st.session_state.logged_in = False
             st.rerun()
 
     st.markdown("---")
-    st.subheader("📊 Sua Evolução")
+
+    # --- NOVO: SEÇÃO DE COMPARTILHAMENTO & LOOP VIRAL (INDICAR AMIGOS) ---
+    col_share_esq, col_share_dir = st.columns(2)
+    
+    with col_share_esq:
+        st.markdown(f"""
+            <div class="referral-box">
+                <h4 style="margin-top:0;color:white;">🚀 Ganhe Correções Extras Grátis!</h4>
+                <p style="font-size:0.95rem;">Compartilhe o seu código abaixo com amigos. Quando eles se cadastrarem, 
+                você ganha <b>+1 crédito de redação bônus</b> na hora!</p>
+                <p style="font-size:1.1rem; background:rgba(255,255,255,0.2); padding:8px; border-radius:8px; text-align:center; font-weight:bold; letter-spacing:2px;">
+                    SEU CÓDIGO: {profile.get('my_referral_code')}
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
+        
+    with col_share_dir:
+        st.subheader("📢 Compartilhar sua Evolução")
+        st.caption("Clique abaixo para copiar a sua mensagem de sucesso e postar nos seus grupos de estudos ou redes!")
+        st.code(share_marketing.get("copy_text"), language="text")
+        if st.button("Copiar Texto de Sucesso"):
+            st.toast("Texto copiado para a área de transferência!", icon="📋")
+
+    st.markdown("---")
+    st.subheader("📊 Gráfico de Desempenho")
     st.info(metrics.get("status_message"))
     
     m1, m2, m3 = st.columns(3)
     m1.metric("Média das Notas", metrics.get("average_score"))
     m2.metric("Redações Corrigidas", metrics.get("total_essays"))
-    m3.metric("Meta", metrics.get("target_score"))
+    m3.metric("Meta de Corte", metrics.get("target_score"))
         
     history = dash_data.get("history", [])
     if history:
@@ -288,50 +321,58 @@ else:
 
     st.markdown("---")
 
-    # SELETOR DE TEMAS DINÂMICO
+    # LABORATÓRIO DE REDAÇÃO COM TRAVA DE BLOQUEIO SMART
     st.subheader("✍️ Laboratório de Redação")
-    try:
-        themes_res = requests.get(f"{API_BASE_URL}/themes")
-        if themes_res.status_code == 200:
-            lista_temas = themes_res.json()
-            opcoes_temas = {f"[{t['banca']}] {t['title']}": t['id'] for t in lista_temas}
-            t_sel = st.selectbox("Escolha sua proposta:", list(opcoes_temas.keys()))
-            THEME_ID = opcoes_temas[t_sel]
-        else:
-            THEME_ID = 1
-    except:
-        THEME_ID = 1
-
-    essay_text = st.text_area("Seu texto:", height=350, placeholder="Inicie sua redação aqui...")
     
-    if st.button("🚀 CORRIGIR AGORA", type="primary"):
-        if essay_text.strip():
-            with st.spinner("Nossa IA está analisando cada detalhe do seu texto..."):
-                payload = {"theme_id": THEME_ID, "content": essay_text}
-                res = requests.post(f"{API_BASE_URL}/essays/submit", json=payload, headers=headers)
-                
-                if res.status_code == 200:
-                    resultado = res.json()["resultado"]
-                    st.success(f"Nota Final: {resultado['final_score']}/1000")
+    # Se os créditos acabarem e ele for FREE, bloqueia a interface e induz ao Upgrade
+    if not is_premium and profile.get("credits", 0) <= 0:
+        st.error("🚨 Seus créditos de correção acabaram!")
+        st.warning("Para continuar evoluindo, indique amigos usando seu código acima ou assine o **Plano Premium** para ter correções ilimitadas e relatórios avançados.")
+        st.button("💳 MUDAR PARA O PREMIUM (Acesso Ilimitado)")
+    else:
+        try:
+            themes_res = requests.get(f"{API_BASE_URL}/themes")
+            if themes_res.status_code == 200:
+                lista_temas = themes_res.json()
+                opcoes_temas = {f"[{t['banca']}] {t['title']}": t['id'] for t in lista_temas}
+                t_sel = st.selectbox("Escolha sua proposta:", list(opcoes_temas.keys()))
+                THEME_ID = opcoes_temas[t_sel]
+            else:
+                THEME_ID = 1
+        except:
+            THEME_ID = 1
+
+        essay_text = st.text_area("Seu texto:", height=350, placeholder="Desenvolva sua introdução, argumentos e proposta de intervenção...")
+        
+        if st.button("🚀 CORRIGIR AGORA", type="primary"):
+            if essay_text.strip():
+                with st.spinner("Nossa IA está avaliando cada competência do seu texto..."):
+                    payload = {"theme_id": THEME_ID, "content": essay_text}
+                    res = requests.post(f"{API_BASE_URL}/essays/submit", json=payload, headers=headers)
                     
-                    st.subheader("📋 Desempenho por Competência")
-                    cols = st.columns(5)
-                    comps = resultado["competences"]
-                    for i, k in enumerate(["c1", "c2", "c3", "c4", "c5"]):
-                        with cols[i]:
-                            st.metric(f"Comp. {i+1}", f"{comps[k]['score']}")
-                            st.caption(comps[k]['feedback'])
-                    
-                    st.subheader("🔍 Microaulas de Correção")
-                    for idx, c in enumerate(resultado["corrections"]):
-                        with st.expander(f"Erro: {c['original_text']}"):
-                            st.write(f"**Sugestão:** {c['corrected_text']}")
-                            st.info(f"💡 {c['micro_lesson']}")
-                            
-                    st.subheader("🎯 Plano de Evolução")
-                    ev = resultado["evolution_plan"]
-                    st.write(f"**Pontos Fortes:** {', '.join(ev['strengths'])}")
-                    st.warning(f"**Próximos Passos:** {ev['next_steps']}")
-                    st.info(f"📚 **Leitura:** {ev['recommended_reading']}")
-                else:
-                    st.error(res.json().get("detail"))
+                    if res.status_code == 200:
+                        resultado = res.json()["resultado"]
+                        st.success(f"🎉 Redação Avaliada! Nota Final: {resultado['final_score']}/1000")
+                        
+                        st.subheader("📋 Desempenho por Competência")
+                        cols = st.columns(5)
+                        comps = resultado["competences"]
+                        for i, k in enumerate(["c1", "c2", "c3", "c4", "c5"]):
+                            with cols[i]:
+                                st.metric(f"Comp. {i+1}", f"{comps[k]['score']}/200")
+                                st.caption(comps[k]['feedback'])
+                        
+                        st.subheader("🔍 Microaulas de Correção")
+                        for idx, c in enumerate(resultado["corrections"]):
+                            with st.expander(f"Desvio: {c['original_text']}"):
+                                st.write(f"**Sugestão:** {c['corrected_text']}")
+                                st.info(f"💡 {c['micro_lesson']}")
+                                
+                        st.subheader("🎯 Plano de Evolução")
+                        ev = resultado["evolution_plan"]
+                        st.write(f"**Pontos Fortes:** {', '.join(ev['strengths'])}")
+                        st.warning(f"**Próximos Passos:** {ev['next_steps']}")
+                        st.info(f"📚 **Leitura:** {ev['recommended_reading']}")
+                        st.rerun()
+                    else:
+                        st.error(res.json().get("detail"))
