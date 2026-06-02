@@ -465,13 +465,13 @@ else:
                     except:
                         st.error("Erro de comunicação com o servidor.")
 
-    # CARDS COM OFERTAS IRRESISTÍVEIS (FECHADOS CORRETAMENTE COM CONCATENAÇÃO LIMPA)
+    # CARDS COM OFERTAS IRRESISTÍVEIS (BLINDADOS COM SUBSTITUIÇÃO SEGURA)
     if not is_premium:
         st.markdown("---")
         st.markdown("<h2 style='text-align:center; color:#1e3c72;'>👑 Destrave o Seu Potencial Máximo Rumo ao 1000</h2>", unsafe_allow_html=True)
         st.markdown("<p style='text-align:center; color:#4a5568; margin-bottom:30px;'>Não arrisque seu futuro estudando com correções demoradas. Escolha o plano ideal e conquiste sua aprovação hoje.</p>", unsafe_allow_html=True)
         
-        html_pricing = '''
+        raw_html_pricing = """
             <div class="pricing-grid">
                 <div class="pricing-card">
                     <h3 style="color:#2d3748; margin-bottom:5px;">Plano Mensal</h3>
@@ -483,7 +483,7 @@ else:
                         <li>Microaulas de Gramática IA</li>
                         <li>Dashboard de Evolução Completo</li>
                     </ul>
-                    <a href="''' + STRIPE_CHECKOUT_URL + '''" target="_blank" style="text-decoration:none;">
+                    <a href="CHAVE_STRIPE" target="_blank" style="text-decoration:none;">
                         <button style="background:#4a5568; color:white; border:none; padding:12px; width:100%; border-radius:10px; font-weight:bold; cursor:pointer;">ASSINAR AGORA</button>
                     </a>
                 </div>
@@ -501,7 +501,7 @@ else:
                         <li>Biblioteca Completa de Repertórios</li>
                         <li>Suporte do IA Tutor Premium 24/7</li>
                     </ul>
-                    <a href="''' + STRIPE_CHECKOUT_URL + '''" target="_blank" style="text-decoration:none;">
+                    <a href="CHAVE_STRIPE" target="_blank" style="text-decoration:none;">
                         <button style="background:linear-gradient(45deg, #ff416c, #ff4b2b); color:white; border:none; padding:14px; width:100%; border-radius:10px; font-weight:bold; cursor:pointer; box-shadow: 0 4px 15px rgba(255,65,108,0.35);">QUERO SER PREMIUM</button>
                     </a>
                 </div>
@@ -517,11 +517,14 @@ else:
                         <li>Microaulas de Gramática IA</li>
                         <li>Acesso à Biblioteca Básica</li>
                     </ul>
-                    <a href="''' + STRIPE_CHECKOUT_URL + '''" target="_blank" style="text-decoration:none;">
+                    <a href="CHAVE_STRIPE" target="_blank" style="text-decoration:none;">
                         <button style="background:#4a5568; color:white; border:none; padding:12px; width:100%; border-radius:10px; font-weight:bold; cursor:pointer;">ASSINAR AGORA</button>
                     </a>
                 </div>
             </div>
             <p style="text-align:center; color:#718096; font-size:0.85rem; margin-top:30px;">🔒 Pagamento 100% Seguro via Stripe. Cancele quando quiser sem multas.</p>
-        '''
-        st.markdown(html_pricing, unsafe_allow_html=True)
+        """
+        
+        # Injeta dinamicamente a URL correta sem chance de quebras de aspas simples ou duplas
+        final_html = raw_html_pricing.replace("CHAVE_STRIPE", STRIPE_CHECKOUT_URL)
+        st.markdown(final_html, unsafe_allow_html=True)
