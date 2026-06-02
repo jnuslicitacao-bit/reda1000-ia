@@ -11,8 +11,8 @@ if "API_BASE_URL" in st.secrets:
 else:
     API_BASE_URL = "http://127.0.0.1:8000/api"
 
-# COLE AQUI A URL DIRETA DA SUA LOGO (Hospedada no Imgur, GitHub, etc.)
-LOGO_URL = "URL_DA_SUA_IMAGEM_AQUI" 
+# COLE AQUI A URL RAW DO GITHUB QUE VOCÊ COPIOU NO PASSO 1
+LOGO_URL = "https://raw.githubusercontent.com/jnuslicitacao-bit/reda1000-ia/main/logo.png" 
 
 # Inicializa variáveis de estado de sessão
 if "token" not in st.session_state:
@@ -125,7 +125,7 @@ st.markdown(f"""
             padding: 14px;
             font-weight: bold;
             width: 100%;
-            margin: 20px auto 0 auto; /* Centraliza no eixo do bloco */
+            margin: 20px auto 0 auto;
             display: block;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }}
@@ -134,7 +134,7 @@ st.markdown(f"""
             box-shadow: 0 8px 20px rgba(30, 60, 114, 0.25);
         }}
 
-        /* OTIMIZAÇÃO RIGOROSA PARA DISPOSITIVOS MÓVEIS (MOBILE) */
+        /* OTIMIZAÇÃO PARA DISPOSITIVOS MÓVEIS (MOBILE) */
         @media (max-width: 768px) {{
             .logo-container {{ max-width: 280px; padding-top: 10px; }}
             .ticker-item {{ padding: 0 15px; font-size: 0.75rem; }}
@@ -150,10 +150,10 @@ st.markdown(f"""
 # --- TELA DE AUTENTICAÇÃO ---
 if not st.session_state.logged_in:
     
-    # 1. LOGO EM IMAGEM (Substituindo o texto antigo)
+    # 1. LOGO EM IMAGEM DINÂMICA
     st.markdown(f'''
         <div class="logo-container">
-            <img src="{'C:\Users\USER\Desktop\Reda1000IA\logo.png'}" class="logo-img" alt="Reda1000IA Logo">
+            <img src="{'https://raw.githubusercontent.com/jnuslicitacao-bit/reda1000-ia/refs/heads/main/logo.png'}" class="logo-img" alt="Reda1000IA Logo">
         </div>
     ''', unsafe_allow_html=True)
     
@@ -166,10 +166,10 @@ if not st.session_state.logged_in:
                 <div class="ticker-item">🔥 <b>João Pedro</b> garantiu <b>940</b> na redação do TJ-SP!</div>
                 <div class="ticker-item">✨ <b>Carla M.</b> nota <b>900+</b> usando a Reda1000IA</div>
                 <div class="ticker-item">🎯 <b>Lucas F.</b> nota <b>960</b> com nosso método!</div>
-                <div class="ticker-item">🚀 <b>Beatriz H.</b> nota <b>940</b> na Fuvest!</div>
-                <div class="ticker-item">✨ <b>Aline A.</b> nota <b>758+</b> usando a Reda1000IA</div>
-                <div class="ticker-item">🎯 <b>Isabella G.</b> subiu de 420 para <b>910</b> com nosso método!</div>
-                <div class="ticker-item">🚀 <b>Beatriz A.</b> nota <b>840</b> na Fuvest!</div>
+                <div class="ticker-item">🚀 <b>Beatriz G.</b> nota <b>940</b> na Fuvest!</div>
+                <div class="ticker-item">🚀 <b>Carolina F.</b> subiu de 410 para <b>880</b> em 3 semanas!</div>
+                <div class="ticker-item">🔥 <b>Isabella G.</b> garantiu <b>940</b> na redação do ESA!</div>
+                <div class="ticker-item">✨ <b>Clara Amaral.</b> nota <b>850+</b> usando a Reda1000IA</div>
             </div>
         </div>
     ''', unsafe_allow_html=True)
@@ -290,7 +290,7 @@ else:
     except:
         THEME_ID = 1
 
-    essay_text = st.text_area("Seu texto:", height=350, placeholder="Inicie sua redação aqui...")
+    essay_text = st.text_area("Seu text:", height=350, placeholder="Inicie sua redação aqui...")
     
     if st.button("🚀 CORRIGIR AGORA", type="primary"):
         if essay_text.strip():
