@@ -11,7 +11,7 @@ if "API_BASE_URL" in st.secrets:
 else:
     API_BASE_URL = "http://127.0.0.1:8000/api"
 
-# COLE AQUI A URL RAW DO GITHUB QUE VOCÊ COPIOU NO PASSO 1
+# URL de entrega direta da imagem hospedada no seu repositório principal
 LOGO_URL = "https://raw.githubusercontent.com/jnuslicitacao-bit/reda1000-ia/main/logo.png" 
 
 # Inicializa variáveis de estado de sessão
@@ -20,7 +20,7 @@ if "token" not in st.session_state:
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
-# --- INJEÇÃO DE DESIGN PREMIUM COM LOGO E OTIMIZAÇÃO MOBILE ---
+# --- INJEÇÃO DE DESIGN PREMIUM CORRIGIDO (SEM RETÂNGULO VAZIO) ---
 st.markdown(f"""
     <style>
         /* Estilização do fundo */
@@ -89,34 +89,17 @@ st.markdown(f"""
             margin: 0;
         }}
         
-        /* REMOÇÃO COMPLETA DO RETÂNGULO VAZIO EM CIMA DO LOGIN */
-        .stTabs [data-baseweb="tab-list"] {{
-            gap: 10px;
-            justify-content: center;
-            border-bottom: none !important;
-            padding: 0 !important;
-            margin-bottom: -10px !important;
-        }}
-        .stTabs [data-baseweb="tab"] {{
-            border: none !important;
-            box-shadow: none !important;
-        }}
-        .stTabs [data-baseweb="tab-panel"] {{
-            padding-top: 0px !important;
-            margin-top: 0px !important;
-        }}
-        
-        /* CARD DE LOGIN */
+        /* CARD DE LOGIN (ENCAPSULAMENTO LIMPO) */
         .login-card {{
             background-color: #ffffff;
             padding: 40px;
             border-radius: 24px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.06);
             border: 1px solid #edf2f7;
-            margin-top: 0px !important;
+            margin-top: 10px !important;
         }}
         
-        /* CENTRALIZAÇÃO E DESIGN DO BOTÃO */
+        /* CUSTOMIZAÇÃO DO BOTÃO CENTRALIZADO */
         div.stButton > button:first-child {{
             background: linear-gradient(45deg, #1e3c72, #2a5298);
             color: white;
@@ -134,7 +117,7 @@ st.markdown(f"""
             box-shadow: 0 8px 20px rgba(30, 60, 114, 0.25);
         }}
 
-        /* OTIMIZAÇÃO PARA DISPOSITIVOS MÓVEIS (MOBILE) */
+        /* OTIMIZAÇÃO COMPLETA PARA DISPOSITIVOS MÓVEIS (MOBILE) */
         @media (max-width: 768px) {{
             .logo-container {{ max-width: 280px; padding-top: 10px; }}
             .ticker-item {{ padding: 0 15px; font-size: 0.75rem; }}
@@ -150,10 +133,10 @@ st.markdown(f"""
 # --- TELA DE AUTENTICAÇÃO ---
 if not st.session_state.logged_in:
     
-    # 1. LOGO EM IMAGEM DINÂMICA
+    # 1. LOGO EM IMAGEM (Resgatada dinamicamente do GitHub)
     st.markdown(f'''
         <div class="logo-container">
-            <img src="{'https://raw.githubusercontent.com/jnuslicitacao-bit/reda1000-ia/refs/heads/main/logo.png'}" class="logo-img" alt="Reda1000IA Logo">
+            <img src="{LOGO_URL}" class="logo-img" alt="Reda1000IA Logo">
         </div>
     ''', unsafe_allow_html=True)
     
@@ -174,7 +157,7 @@ if not st.session_state.logged_in:
         </div>
     ''', unsafe_allow_html=True)
     
-    # 3. CONTEXTO DE CONVERSÃO (URGÊNCIA)
+    # 3. BOX DE URGÊNCIA E MARKETING DE ESCASSEZ
     st.markdown('''
         <div class="urgency-box">
             <p class="urgency-text">
@@ -184,7 +167,7 @@ if not st.session_state.logged_in:
         </div>
     ''', unsafe_allow_html=True)
     
-    # Grid de Centralização
+    # Grid estrutural para centralizar o formulário
     _, col_central, _ = st.columns([1, 1.6, 1])
     
     with col_central:
@@ -230,7 +213,7 @@ if not st.session_state.logged_in:
                     st.warning("⚠️ Preencha todos os campos.")
             st.markdown('</div>', unsafe_allow_html=True)
 
-# --- ÁREA LOGADA ---
+# --- ÁREA LOGADA DA PLATAFORMA ---
 else:
     headers = {"Authorization": f"Bearer {st.session_state.token}"}
     
@@ -290,7 +273,7 @@ else:
     except:
         THEME_ID = 1
 
-    essay_text = st.text_area("Seu text:", height=350, placeholder="Inicie sua redação aqui...")
+    essay_text = st.text_area("Seu texto:", height=350, placeholder="Inicie sua redação aqui...")
     
     if st.button("🚀 CORRIGIR AGORA", type="primary"):
         if essay_text.strip():
