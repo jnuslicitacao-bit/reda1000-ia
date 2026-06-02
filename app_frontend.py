@@ -11,10 +11,10 @@ if "API_BASE_URL" in st.secrets:
 else:
     API_BASE_URL = "http://127.0.0.1:8000/api"
 
-# CORREÇÃO DA STRIPE: URL limpa e sem duplicações de protocolo para evitar Access Denied
+# URL da Stripe para onde o botão Premium vai redirecionar o usuário
 STRIPE_CHECKOUT_URL = "https://buy.stripe.com/test_8x25kDfp73cqcfwdOQafS00"
 
-# URL Raw que o GitHub permite acesso público sem restrições
+# URL Raw Oficial do seu GitHub
 LOGO_URL = "https://raw.githubusercontent.com/jnuslicitacao-bit/reda1000-ia/main/logo.png" 
 
 # Inicializa variáveis de estado de sessão do Streamlit
@@ -44,6 +44,13 @@ st.markdown(f"""
             height: auto;
             max-height: 280px;
             object-fit: contain;
+        }}
+        
+        /* CONTAINER DA LOGO INTERNA (MENOR) */
+        .logo-container-internal {{
+            text-align: left;
+            padding: 10px 0;
+            max-width: 180px;
         }}
         
         /* CARROSSEL DE PROVA SOCIAL */
@@ -113,6 +120,70 @@ st.markdown(f"""
             margin-bottom: 25px;
         }}
         
+        /* GRID DE PRECIFICAÇÃO / CARDS DE OFERTA PREMUM */
+        .pricing-grid {{
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }}
+        .pricing-card {{
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            width: 320px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 2px solid #e2e8f0;
+            position: relative;
+            transition: transform 0.3s ease;
+        }}
+        .pricing-card.featured {{
+            border-color: #2a5298;
+            transform: scale(1.03);
+        }}
+        .badge-featured {{
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            color: white;
+            padding: 4px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }}
+        .pricing-price {{
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #1a202c;
+            margin: 15px 0;
+        }}
+        .pricing-price small {{
+            font-size: 1rem;
+            font-weight: 400;
+            color: #718096;
+        }}
+        .pricing-features {{
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+            text-align: left;
+            font-size: 0.9rem;
+            color: #4a5568;
+        }}
+        .pricing-features li {{
+            margin-bottom: 10px;
+        }}
+        .pricing-features li::before {{
+            content: "✓ ";
+            color: #2b6cb0;
+            font-weight: bold;
+        }}
+        
         /* BOTÃO PRINCIPAL FORMULÁRIO */
         div.stButton > button:first-child {{
             background: linear-gradient(45deg, #1e3c72, #2a5298);
@@ -136,8 +207,9 @@ st.markdown(f"""
             .ticker-item {{ padding: 0 15px; font-size: 0.75rem; }}
             .ticker-wrapper {{ border-radius: 20px; padding: 6px 0; margin-bottom: 15px; }}
             .urgency-box {{ padding: 10px; margin-bottom: 20px; }}
-            .urgency-text {{ font-size: 0.85rem; }}
             .login-card {{ padding: 20px !important; border-radius: 16px; }}
+            .pricing-card {{ width: 100%; }}
+            .pricing-card.featured {{ transform: none; }}
         }}
     </style>
 """, unsafe_allow_html=True)
@@ -301,7 +373,14 @@ else:
     metrics = dash_data.get("metrics", {})
     share_marketing = dash_data.get("share_marketing", {})
     
-    st.title("📝 Reda1000IA — Painel de Treinamento")
+    # 1. INJEÇÃO DA LOGO OFICIAL NO TOPO DA ÁREA LOGADA DO ALUNO
+    st.markdown(f'''
+        <div class="logo-container-internal">
+            <img src="{LOGO_URL}" style="width:100%; height:auto;" alt="Reda1000IA">
+        </div>
+    ''', unsafe_allow_html=True)
+    
+    st.subheader("📝 Painel de Treinamento e Métricas Inteligentes")
     
     c1, c2, c3, c4, c5 = st.columns([2, 1, 1, 2, 1])
     with c1: st.metric("Estudante", profile.get("name", "Aluno"))
@@ -351,19 +430,13 @@ else:
         st.line_chart([e["score"] for e in history])
 
     st.markdown("---")
-    st.subheader("✍️ Laboratório de Redação")
+    
+    # 2. LABORATÓRIO DE REDAÇÃO
+    st.subheader("✍ shrink Laboratório de Redação")
     
     if not is_premium and profile.get("credits", 0) <= 0:
         st.error("🚨 Seus créditos de correção acabaram!")
-        st.warning("Para continuar evoluindo, indique amigos usando seu código acima ou assine o **Plano Premium** para ter correções ilimitadas.")
-        
-        st.markdown(f'''
-            <a href="{STRIPE_CHECKOUT_URL}" target="_blank" style="text-decoration: none;">
-                <button style="background: linear-gradient(45deg, #ff416c, #ff4b2b); color: white; border-radius: 12px; border: none; padding: 14px; font-weight: bold; width: 100%; cursor: pointer;">
-                    💳 QUERO ACESSO ILIMITADO (VIRAR PREMIUM)
-                </button>
-            </a>
-        ''', unsafe_allow_html=True)
+        st.warning("Para continuar evoluindo e garantir sua nota máxima, escolha um dos planos com ofertas imperdíveis logo abaixo e garanta acesso imediato sem limites.")
     else:
         try:
             themes_res = requests.get(f"{API_BASE_URL}/themes")
@@ -391,3 +464,64 @@ else:
                             st.error(res.json().get("detail", "Erro ao processar."))
                     except:
                         st.error("Erro de comunicação com o servidor.")
+
+    # 3. CARD COM OFERTAS IRRESISTÍVEIS (RODAPÉ DA PÁGINA FIXO PARA PLANOS GRATUITOS)
+    if not is_premium:
+        st.markdown("---")
+        st.markdown("<h2 style='text-align:center; color:#1e3c72;'>👑 Destrave o Seu Potencial Máximo Rumo ao 1000</h2>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align:center; color:#4a5568; margin-bottom:30px;'>Não arrisque seu futuro estudando com correções demoradas. Escolha o plano ideal e conquiste sua aprovação hoje.</p>", unsafe_allow_html=True)
+        
+        # Estrutura HTML/CSS injetando os 3 cards de alta conversão
+        st.markdown(f"""
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3 style="color:#2d3748; margin-bottom:5px;">Plano Mensal</h3>
+                    <p style="color:#718096; font-size:0.85rem; margin-top:0;">Ideal para testar o método</p>
+                    <div class="pricing-price">R$ 39,90<small>/mês</small></div>
+                    <ul class="pricing-features">
+                        <li>Correções <b>Ilimitadas</b> de Redação</li>
+                        <li>Feedback por Competências</li>
+                        <li>Microaulas de Gramática IA</li>
+                        <li>Dashboard de Evolução Completo</li>
+                    </ul>
+                    <a href="{STRIPE_CHECKOUT_URL}" target="_blank" style="text-decoration:none;">
+                        <button style="background:#4a5568; color:white; border:none; padding:12px; width:100%; border-radius:10px; font-weight:bold; cursor:pointer;">ASSINAR AGORA</button>
+                    </a>
+                </div>
+                
+                <div class="pricing-card featured">
+                    <div class="badge-featured">Mais Vendido / Economize 40%</div>
+                    <h3 style="color:#1e3c72; margin-bottom:5px; padding-top:10px;">Plano Anual</h3>
+                    <p style="color:#718096; font-size:0.85rem; margin-top:0;">Preparação Completa de Elite</p>
+                    <div class="pricing-price">R$ 23,90<small>/mês</small></div>
+                    <p style="color:#e53e3e; font-size:0.8rem; font-weight:bold; margin-top:-10px;">Cobrado anualmente por R$ 286,80</p>
+                    <ul class="pricing-features">
+                        <li><b>Tudo do plano Mensal</b></li>
+                        <li>Acesso Prioritário à API (Sem Filas)</li>
+                        <li>Trilha Personalizada de Aprendizado</li>
+                        <li>Biblioteca Completa de Repertórios</li>
+                        <li>Suporte do IA Tutor Premium 24/7</li>
+                    </ul>
+                    <a href="{STRIPE_CHECKOUT_URL}" target="_blank" style="text-decoration:none;">
+                        <button style="background:linear-gradient(45deg, #ff416c, #ff4b2b); color:white; border:none; padding:14px; width:100%; border-radius:10px; font-weight:bold; cursor:pointer; box-shadow: 0 4px 15px rgba(255,65,108,0.35);">QUERO SER PREMIUM</button>
+                    </a>
+                </div>
+                
+                <div class="pricing-card">
+                    <h3 style="color:#2d3748; margin-bottom:5px;">Plano Trimestral</h3>
+                    <p style="color:#718096; font-size:0.85rem; margin-top:0;">Foco Intensivo de Reta Final</p>
+                    <div class="pricing-price">R$ 32,90<small>/mês</small></div>
+                    <p style="color:#718096; font-size:0.8rem; margin-top:-10px;">Cobrado a cada 3 meses (R$ 98,70)</p>
+                    <ul class="pricing-features">
+                        <li>Correções <b>Ilimitadas</b> de Redação</li>
+                        <li>Feedback por Competências</li>
+                        <li>Microaulas de Gramática IA</li>
+                        <li>Acesso à Biblioteca Básica</li>
+                    </ul>
+                    <a href="{STRIPE_CHECKOUT_URL}" target="_blank" style="text-decoration:none;">
+                        <button style="background:#4a5568; color:white; border:none; padding:12px; width:100%; border-radius:10px; font-weight:bold; cursor:pointer;">ASSINAR AGORA</button>
+                    </a>
+                </div>
+            </div>
+            <p style="text-align:center; color:#718096; font-size:0.85rem; margin-top:30px;">🔒 Pagamento 100% Seguro via Stripe. Cancele quando quiser sem multas.</p>
+        ''', unsafe_allow_html=True)
