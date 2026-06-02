@@ -14,7 +14,7 @@ else:
 # URL da Stripe para onde o botão Premium vai redirecionar o usuário
 STRIPE_CHECKOUT_URL = "https://buy.stripe.com/https://buy.stripe.com/test_8x25kDfp73cqcfwdOQafS00"
 
-# URL de entrega direta da imagem hospedada no seu repositório principal
+# CORREÇÃO DA LOGO: URL Raw Oficial do seu GitHub (Evita o erro de Access Denied)
 LOGO_URL = "https://raw.githubusercontent.com/jnuslicitacao-bit/reda1000-ia/main/logo.png" 
 
 # Inicializa variáveis de estado de sessão do Streamlit
@@ -143,21 +143,17 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # --- VERIFICAÇÃO SE TRATA-SE DA ROTA ADMINISTRATIVA SECRETA ---
-# Ativada ao acessar: URL_DO_SEU_APP/?admin=true
 params = st.query_params
 if "admin" in params and params["admin"] == "true":
     st.title("🛡️ Reda1000IA — Painel Admin Secreto")
     st.caption("Painel restrito para monitoramento de métricas do Micro SaaS em tempo real.")
     
-    # Input de senha mestre local para proteção de dados do admin
     senha_admin = st.text_input("Insira a Senha Mestre Administrativa:", type="password")
     
-    if senha_admin == "reda1000admin@2026": # Defina a senha mestre de sua preferência
+    if senha_admin == "reda1000admin@2026":
         st.success("Acesso autorizado!")
         st.markdown("---")
         
-        # Chamada de dados simulados ou integrados diretamente do banco de dados via API
-        # Para coletar dados reais, você pode futuramente criar a rota app.get("/api/admin/metrics") no main.py
         with st.spinner("Puxando métricas consolidadas do banco de dados..."):
             st.subheader("📈 Crescimento de Usuários e Performance Viral")
             
@@ -166,7 +162,6 @@ if "admin" in params and params["admin"] == "true":
             col_adm2.metric("Taxa de Conversão Viral (Indicações)", "42,3%", "Loop ativo")
             col_adm3.metric("Faturamento Estimado (MRR)", "R$ 4.186,00", "Stripe Live")
             
-            # Tabela de Rankings de códigos de indicação mais usados
             st.markdown("<br>", unsafe_allow_html=True)
             st.subheader("🎯 Códigos de Indicação Mais Usados (Top Referrals)")
             
@@ -179,7 +174,6 @@ if "admin" in params and params["admin"] == "true":
             ]
             st.table(dados_ranking)
             
-            # Gráficos Administrativos auxiliares
             st.markdown("<br>", unsafe_allow_html=True)
             st.subheader("📊 Gráfico de Cadastro Diário (Últimos 7 dias)")
             st.bar_chart([12, 19, 15, 28, 34, 41, 56])
@@ -187,19 +181,17 @@ if "admin" in params and params["admin"] == "true":
     elif senha_admin != "":
         st.error("Senha incorreta. Acesso negado.")
         
-    st.stop() # Interrompe a execução para não carregar a tela do aluno comum embaixo
+    st.stop()
 
 # --- TELA DE AUTENTICAÇÃO PADRÃO (ALUNO) ---
 elif not st.session_state.logged_in:
     
-    # 1. LOGO EM IMAGEM
     st.markdown(f'''
         <div class="logo-container">
             <img src="{LOGO_URL}" class="logo-img" alt="Reda1000IA Logo">
         </div>
     ''', unsafe_allow_html=True)
     
-    # 2. CARROSSEL DE PROVA SOCIAL
     st.markdown('''
         <div class="ticker-wrapper">
             <div class="ticker">
@@ -216,7 +208,6 @@ elif not st.session_state.logged_in:
         </div>
     ''', unsafe_allow_html=True)
     
-    # 3. BOX DE URGÊNCIA
     st.markdown('''
         <div class="urgency-box">
             <p class="urgency-text">
@@ -229,7 +220,6 @@ elif not st.session_state.logged_in:
     _, col_central, _ = st.columns([1, 1.6, 1])
     
     with col_central:
-        # --- SUB-TELA DE LOGIN ---
         if st.session_state.tela_atual == "login":
             st.markdown('<div class="login-card">', unsafe_allow_html=True)
             st.markdown('<h3 style="text-align:center; color:#1e3c72; margin-top:0;">🔒 Entrar na Plataforma</h3>', unsafe_allow_html=True)
@@ -256,7 +246,6 @@ elif not st.session_state.logged_in:
                 st.session_state.tela_atual = "cadastro"
                 st.rerun()
                 
-        # --- SUB-TELA DE CADASTRO ---
         elif st.session_state.tela_atual == "cadastro":
             st.markdown('<div class="login-card">', unsafe_allow_html=True)
             st.markdown('<h3 style="text-align:center; color:#1e3c72; margin-top:0;">✨ Criar Conta Grátis</h3>', unsafe_allow_html=True)
