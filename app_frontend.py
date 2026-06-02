@@ -24,7 +24,7 @@ if "logged_in" not in st.session_state:
 if "tela_atual" not in st.session_state:
     st.session_state.tela_atual = "login"
 
-# --- INJEÇÃO DE ESTILOS CSS UNIFICADO (PREVINE O RETÂNGULO BRANCO E VAZAMENTOS) ---
+# --- INJEÇÃO DE DESIGN PREMIUM COMPLETO (CSS TOTALMENTE ISOLADO) ---
 st.markdown("""
     <style>
         .stApp {
@@ -192,7 +192,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# --- FUNÇÃO ISOLADA DA TABELA DE PREÇOS (CONVERSÃO SEGURA SEM VAZAMENTO) ---
+# --- FUNÇÃO ENCAPSULADA DE COMPARTILHAMENTO DE PREÇOS (CONVERSÃO SEGURA SEM VAZAMENTO) ---
 def render_pricing_table(stripe_url):
     st.markdown("---")
     st.markdown("<h2 style='text-align:center; color:#1e3c72;'>👑 Destrave o Seu Potencial Máximo Rumo ao 1000</h2>", unsafe_allow_html=True)
@@ -449,6 +449,6 @@ else:
                     except:
                         st.error("Erro de comunicação com o servidor.")
 
-    # 3. RENDERIZAÇÃO SEGURA DA PÁGINA DE PREÇOS CASO NÃO SEJA PREMIUM
+    # 3. EXIBE A TABELA DE PREÇOS NO RODAPÉ APENAS SE O USUÁRIO LOGADO NÃO FOR PREMIUM
     if not is_premium:
         render_pricing_table(STRIPE_CHECKOUT_URL)
