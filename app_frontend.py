@@ -17,51 +17,152 @@ if "token" not in st.session_state:
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
+# --- INJEÇÃO DE DESIGN PREMIUM (CSS CUSTOMIZADO) ---
+st.markdown("""
+    <style>
+        /* Estilização do fundo e container principal */
+        .stApp {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+        }
+        
+        /* Título principal com degradê moderno */
+        .main-title {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: linear-gradient(45deg, #1e3c72, #2a5298);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        
+        /* Subtítulo atraente */
+        .sub-title {
+            color: #546e7a;
+            font-size: 1.2rem;
+            text-align: center;
+            margin-bottom: 40px;
+            font-weight: 400;
+        }
+        
+        /* Customização das abas (Tabs) */
+        .stTabs [data-baseweb="tab-list"] {
+            gap: 10px;
+            justify-content: center;
+        }
+        .stTabs [data-baseweb="tab"] {
+            background-color: #ffffff;
+            border-radius: 12px 12px 0px 0px;
+            padding: 10px 30px;
+            font-weight: 600;
+            color: #455a64;
+            border: 1px solid #e0e0e0;
+            border-bottom: none;
+        }
+        .stTabs [aria-selected="true"] {
+            background: linear-gradient(45deg, #1e3c72, #2a5298) !important;
+            color: white !important;
+            border: none !important;
+        }
+        
+        /* Card com bordas arredondadas e sombra suave para o formulário */
+        .login-card {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border: 1px solid #e0e0e0;
+            margin-top: 15px;
+        }
+        
+        /* Inputs com cantos mais suaves */
+        .stTextInput div [data-baseweb="input"] {
+            border-radius: 10px !important;
+        }
+        
+        /* Botão Primário Arredondado e com Efeito Hover */
+        div.stButton > button:first-child {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            color: white;
+            border-radius: 12px;
+            border: none;
+            padding: 12px 30px;
+            font-weight: bold;
+            font-size: 1rem;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(255, 65, 108, 0.3);
+            transition: all 0.3s ease;
+        }
+        div.stButton > button:first-child:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 65, 108, 0.4);
+            background: linear-gradient(45deg, #ff4b2b, #ff416c);
+            color: white;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 # --- TELA DE AUTENTICAÇÃO (LOGIN / CADASTRO) ---
 if not st.session_state.logged_in:
-    st.title("📝 Bem-vindo ao Reda1000IA")
-    st.subheader("O seu tutor inteligente para nota máxima no ENEM e Concursos")
+    st.markdown('<h1 class="main-title">📝 Reda1000IA</h1>', unsafe_allow_html=True)
+    st.markdown('<p class="sub-title">O seu tutor inteligente para nota máxima no ENEM e Concursos</p>', unsafe_allow_html=True)
     
-    aba_login, aba_cadastro = st.tabs(["🔒 Entrar na Conta", "✨ Criar Nova Conta"])
+    # Centralizando o formulário na tela usando colunas estruturadas
+    col_espaco_esq, col_central, col_espaco_dir = st.columns([1, 1.8, 1])
     
-    with aba_login:
-        email_login = st.text_input("E-mail", key="email_login_input")
-        senha_login = st.text_input("Senha", type="password", key="senha_login_input")
+    with col_central:
+        aba_login, aba_cadastro = st.tabs(["🔒 Entrar na Conta", "✨ Criar Nova Conta"])
         
-        if st.button("Acessar Plataforma", type="primary"):
-            # O FastAPI espera um formato form-data (username e password) na rota de login padrão
-            payload = {"username": email_login, "password": senha_login}
-            try:
-                res = requests.post(f"{API_BASE_URL}/auth/login", data=payload)
-                if res.status_code == 200:
-                    data = res.json()
-                    st.session_state.token = data["access_token"]
-                    st.session_state.logged_in = True
-                    st.success("Login realizado com sucesso!")
-                    st.rerun()
-                else:
-                    st.error("E-mail ou senha incorretos. Tente novamente.")
-            except Exception as e:
-                st.error(f"Erro ao conectar ao servidor: {e}")
-                
-    with aba_cadastro:
-        nome_cad = st.text_input("Nome Completo")
-        email_cad = st.text_input("E-mail de Estudante")
-        senha_cad = st.text_input("Escolha uma Senha", type="password")
-        
-        if st.button("Cadastrar e Iniciar Gratuitamente"):
-            if not nome_cad or not email_cad or not senha_cad:
-                st.warning("Preencha todos os campos obrigatórios.")
-            else:
-                payload = {"name": nome_cad, "email": email_cad, "password": senha_cad}
+        with aba_login:
+            st.markdown('<div class="login-card">', unsafe_allow_html=True)
+            
+            email_login = st.text_input("E-mail", key="email_login_input", placeholder="exemplo@email.com")
+            senha_login = st.text_input("Senha", type="password", key="senha_login_input", placeholder="Digite sua senha")
+            
+            st.markdown('<br>', unsafe_allow_html=True)
+            
+            if st.button("Acessar Plataforma", type="primary", key="btn_login"):
+                payload = {"username": email_login, "password": senha_login}
                 try:
-                    res = requests.post(f"{API_BASE_URL}/auth/register", json=payload)
-                    if res.status_code == 201:
-                        st.success("Conta criada com sucesso! Mude para a aba de Login para entrar.")
+                    res = requests.post(f"{API_BASE_URL}/auth/login", data=payload)
+                    if res.status_code == 200:
+                        data = res.json()
+                        st.session_state.token = data["access_token"]
+                        st.session_state.logged_in = True
+                        st.success("🎯 Login realizado com sucesso!")
+                        st.rerun()
                     else:
-                        st.error(res.json().get("detail", "Erro ao cadastrar."))
+                        st.error("❌ E-mail ou senha incorretos. Tente novamente.")
                 except Exception as e:
-                    st.error(f"Erro de conexão: {e}")
+                    st.error(f"⚠️ Erro ao conectar ao servidor: {e}")
+            
+            st.markdown('</div>', unsafe_allow_html=True)
+                    
+        with aba_cadastro:
+            st.markdown('<div class="login-card">', unsafe_allow_html=True)
+            
+            nome_cad = st.text_input("Nome Completo", placeholder="Seu nome completo")
+            email_cad = st.text_input("E-mail de Estudante", placeholder="seu.email@escola.com")
+            senha_cad = st.text_input("Escolha uma Senha", type="password", placeholder="Mínimo 6 caracteres")
+            
+            st.markdown('<br>', unsafe_allow_html=True)
+            
+            if st.button("Cadastrar e Iniciar Gratuitamente", key="btn_cadastro"):
+                if not nome_cad or not email_cad or not senha_cad:
+                    st.warning("⚠️ Preencha todos os campos obrigatórios.")
+                else:
+                    payload = {"name": nome_cad, "email": email_cad, "password": senha_cad}
+                    try:
+                        res = requests.post(f"{API_BASE_URL}/auth/register", json=payload)
+                        if res.status_code == 201:
+                            st.success("✨ Conta criada com sucesso! Mude para a aba de 'Entrar na Conta' para fazer o login.")
+                        else:
+                            st.error(f"❌ {res.json().get('detail', 'Erro ao cadastrar.')}")
+                    except Exception as e:
+                        st.error(f"⚠️ Erro de conexão: {e}")
+                        
+            st.markdown('</div>', unsafe_allow_html=True)
 
 # --- ÁREA LOGADA DA PLATAFORMA ---
 else:
@@ -133,7 +234,6 @@ else:
         themes_res = requests.get(f"{API_BASE_URL}/themes")
         if themes_res.status_code == 200:
             lista_temas = themes_res.json()
-            # Mapeia o rótulo visual (Ex: "[ENEM] O estigma associado...") ao ID do tema correspondente
             opcoes_temas = {f"[{t['banca']}] {t['title']}": t['id'] for t in lista_temas}
             
             tema_selecionado = st.selectbox("Escolha a proposta de redação:", list(opcoes_temas.keys()))
