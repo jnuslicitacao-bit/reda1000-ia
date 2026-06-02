@@ -400,7 +400,7 @@ else:
     
     col_share_esq, col_share_dir = st.columns(2)
     with col_share_esq:
-        st.markdown(f"""
+        st.markdown(f'''
             <div class="referral-box">
                 <h4 style="margin-top:0;color:white;">🚀 Ganhe Correções Extras Grátis!</h4>
                 <p>Compartilhe seu código. Quando se cadastrarem, você ganha <b>+1 crédito</b>!</p>
@@ -408,7 +408,7 @@ else:
                     SEU CÓDIGO: {profile.get('my_referral_code', '---')}
                 </p>
             </div>
-        """, unsafe_allow_html=True)
+        ''', unsafe_allow_html=True)
         
     with col_share_dir:
         st.subheader("📢 Compartilhar sua Evolução")
@@ -417,7 +417,7 @@ else:
             st.toast("Texto copiado!", icon="📋")
 
     st.markdown("---")
-    st.subheader("📊 Gráfico de Desemehno")
+    st.subheader("📊 Gráfico de Desempenho")
     st.info(metrics.get("status_message", "Acompanhe suas notas"))
     
     m1, m2, m3 = st.columns(3)
@@ -458,7 +458,7 @@ else:
                     try:
                         res = requests.post(f"{API_BASE_URL}/essays/submit", json={"theme_id": THEME_ID, "content": essay_text}, headers=headers)
                         if res.status_code == 200:
-                            st.success("🎉 Redação Avaliada com sucesso!")
+                            st.success("🎉 Redação Evaluada com sucesso!")
                             st.rerun()
                         else:
                             st.error(res.json().get("detail", "Erro ao processar."))
@@ -471,7 +471,8 @@ else:
         st.markdown("<h2 style='text-align:center; color:#1e3c72;'>👑 Destrave o Seu Potencial Máximo Rumo ao 1000</h2>", unsafe_allow_html=True)
         st.markdown("<p style='text-align:center; color:#4a5568; margin-bottom:30px;'>Não arrisque seu futuro estudando com correções demoradas. Escolha o plano ideal e conquiste sua aprovação hoje.</p>", unsafe_allow_html=True)
         
-        st.markdown(f"""
+        # Injeção segura usando concatenação limpa de strings ao invés de interpolação direta com f-string estrutural
+        html_pricing = '''
             <div class="pricing-grid">
                 <div class="pricing-card">
                     <h3 style="color:#2d3748; margin-bottom:5px;">Plano Mensal</h3>
@@ -483,7 +484,7 @@ else:
                         <li>Microaulas de Gramática IA</li>
                         <li>Dashboard de Evolução Completo</li>
                     </ul>
-                    <a href="{STRIPE_CHECKOUT_URL}" target="_blank" style="text-decoration:none;">
+                    <a href="''' + STRIPE_CHECKOUT_URL + '''" target="_blank" style="text-decoration:none;">
                         <button style="background:#4a5568; color:white; border:none; padding:12px; width:100%; border-radius:10px; font-weight:bold; cursor:pointer;">ASSINAR AGORA</button>
                     </a>
                 </div>
@@ -501,7 +502,7 @@ else:
                         <li>Biblioteca Completa de Repertórios</li>
                         <li>Suporte do IA Tutor Premium 24/7</li>
                     </ul>
-                    <a href="{STRIPE_CHECKOUT_URL}" target="_blank" style="text-decoration:none;">
+                    <a href="''' + STRIPE_CHECKOUT_URL + '''" target="_blank" style="text-decoration:none;">
                         <button style="background:linear-gradient(45deg, #ff416c, #ff4b2b); color:white; border:none; padding:14px; width:100%; border-radius:10px; font-weight:bold; cursor:pointer; box-shadow: 0 4px 15px rgba(255,65,108,0.35);">QUERO SER PREMIUM</button>
                     </a>
                 </div>
@@ -517,10 +518,11 @@ else:
                         <li>Microaulas de Gramática IA</li>
                         <li>Acesso à Biblioteca Básica</li>
                     </ul>
-                    <a href="{STRIPE_CHECKOUT_URL}" target="_blank" style="text-decoration:none;">
+                    <a href="''' + STRIPE_CHECKOUT_URL + '''" target="_blank" style="text-decoration:none;">
                         <button style="background:#4a5568; color:white; border:none; padding:12px; width:100%; border-radius:10px; font-weight:bold; cursor:pointer;">ASSINAR AGORA</button>
                     </a>
                 </div>
             </div>
             <p style="text-align:center; color:#718096; font-size:0.85rem; margin-top:30px;">🔒 Pagamento 100% Seguro via Stripe. Cancele quando quiser sem multas.</p>
-        ''', unsafe_allow_html=True)
+        '''
+        st.markdown(html_pricing, unsafe_allow_html=True)
