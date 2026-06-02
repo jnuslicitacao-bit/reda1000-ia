@@ -1,6 +1,5 @@
 import streamlit as st
 import requests
-import datetime
 
 # Configuração da página do Streamlit
 st.set_page_config(page_title="Reda1000IA - Micro SaaS", page_icon="🚀", layout="wide")
@@ -25,7 +24,7 @@ if "logged_in" not in st.session_state:
 if "tela_atual" not in st.session_state:
     st.session_state.tela_atual = "login"
 
-# --- INJEÇÃO DE DESIGN PREMIUM COMPLETO ---
+# --- INJEÇÃO DE ESTILOS CSS UNIFICADO (PREVINE O RETÂNGULO BRANCO E VAZAMENTOS) ---
 st.markdown("""
     <style>
         .stApp {
@@ -137,11 +136,9 @@ st.markdown("""
             box-shadow: 0 10px 30px rgba(0,0,0,0.05);
             border: 2px solid #e2e8f0;
             position: relative;
-            transition: transform 0.3s ease;
         }
         .pricing-card.featured {
             border-color: #2a5298;
-            transform: scale(1.03);
         }
         .badge-featured {
             position: absolute;
@@ -178,11 +175,6 @@ st.markdown("""
         .pricing-features li {
             margin-bottom: 10px;
         }
-        .pricing-features li::before {
-            content: "✓ ";
-            color: #2b6cb0;
-            font-weight: bold;
-        }
         
         /* BOTÃO PRINCIPAL FORMULÁRIO */
         div.stButton > button:first-child {
@@ -195,74 +187,99 @@ st.markdown("""
             width: 100%;
             margin: 20px auto 0 auto;
             display: block;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
-        div.stButton > button:first-child:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 8px 20px rgba(30, 60, 114, 0.25);
-        }
-
-        @media (max-width: 768px) {
-            .logo-container { max-width: 280px; padding-top: 10px; }
-            .ticker-item { padding: 0 15px; font-size: 0.75rem; }
-            .ticker-wrapper { border-radius: 20px; padding: 6px 0; margin-bottom: 15px; }
-            .urgency-box { padding: 10px; margin-bottom: 20px; }
-            .login-card { padding: 20px !important; border-radius: 16px; }
-            .pricing-card { width: 100%; }
-            .pricing-card.featured { transform: none; }
         }
     </style>
 """, unsafe_allow_html=True)
+
+
+# --- FUNÇÃO ISOLADA DA TABELA DE PREÇOS (CONVERSÃO SEGURA SEM VAZAMENTO) ---
+def render_pricing_table(stripe_url):
+    st.markdown("---")
+    st.markdown("<h2 style='text-align:center; color:#1e3c72;'>👑 Destrave o Seu Potencial Máximo Rumo ao 1000</h2>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center; color:#4a5568; margin-bottom:30px;'>Não arrisque seu futuro estudando com correções demoradas. Escolha o plano ideal e conquiste sua aprovação hoje.</p>", unsafe_allow_html=True)
+    
+    html_content = f"""
+    <div class="pricing-grid">
+        <div class="pricing-card">
+            <h3 style="color:#2d3748; margin-bottom:5px;">Plano Mensal</h3>
+            <p style="color:#718096; font-size:0.85rem; margin-top:0;">Ideal para testar o método</p>
+            <div class="pricing-price">R$ 39,90<small>/mês</small></div>
+            <ul class="pricing-features">
+                <li>✓ Correções <b>Ilimitadas</b> de Redação</li>
+                <li>✓ Feedback por Competências</li>
+                <li>✓ Microaulas de Gramática IA</li>
+                <li>✓ Dashboard de Evolução Completo</li>
+            </ul>
+            <a href="{stripe_url}" target="_blank" style="text-decoration:none;">
+                <button style="background:#4a5568; color:white; border:none; padding:12px; width:100%; border-radius:10px; font-weight:bold; cursor:pointer;">ASSINAR AGORA</button>
+            </a>
+        </div>
+        
+        <div class="pricing-card featured">
+            <div class="badge-featured">Mais Vendido / Economize 40%</div>
+            <h3 style="color:#1e3c72; margin-bottom:5px; padding-top:10px;">Plano Anual</h3>
+            <p style="color:#718096; font-size:0.85rem; margin-top:0;">Preparação Completa de Elite</p>
+            <div class="pricing-price">R$ 23,90<small>/mês</small></div>
+            <p style="color:#e53e3e; font-size:0.8rem; font-weight:bold; margin-top:-10px;">Cobrado anualmente por R$ 286,80</p>
+            <ul class="pricing-features">
+                <li>✓ <b>Tudo do plano Mensal</b></li>
+                <li>✓ Acesso Prioritário à API (Sem Filas)</li>
+                <li>✓ Trilha Personalizada de Aprendizado</li>
+                <li>✓ Biblioteca Completa de Repertórios</li>
+                <li>✓ Suporte do IA Tutor Premium 24/7</li>
+            </ul>
+            <a href="{stripe_url}" target="_blank" style="text-decoration:none;">
+                <button style="background:linear-gradient(45deg, #ff416c, #ff4b2b); color:white; border:none; padding:14px; width:100%; border-radius:10px; font-weight:bold; cursor:pointer;">QUERO SER PREMIUM</button>
+            </a>
+        </div>
+        
+        <div class="pricing-card">
+            <h3 style="color:#2d3748; margin-bottom:5px;">Plano Trimestral</h3>
+            <p style="color:#718096; font-size:0.85rem; margin-top:0;">Foco Intensivo de Reta Final</p>
+            <div class="pricing-price">R$ 32,90<small>/mês</small></div>
+            <p style="color:#718096; font-size:0.8rem; margin-top:-10px;">Cobrado a cada 3 meses (R$ 98,70)</p>
+            <ul class="pricing-features">
+                <li>✓ Correções <b>Ilimitadas</b> de Redação</li>
+                <li>✓ Feedback por Competências</li>
+                <li>✓ Microaulas de Gramática IA</li>
+                <li>✓ Acesso à Biblioteca Básica</li>
+            </ul>
+            <a href="{stripe_url}" target="_blank" style="text-decoration:none;">
+                <button style="background:#4a5568; color:white; border:none; padding:12px; width:100%; border-radius:10px; font-weight:bold; cursor:pointer;">ASSINAR AGORA</button>
+            </a>
+        </div>
+    </div>
+    <p style="text-align:center; color:#718096; font-size:0.85rem; margin-top:30px;">🔒 Pagamento 100% Seguro via Stripe. Cancele quando quiser sem multas.</p>
+    """
+    st.markdown(html_content, unsafe_allow_html=True)
+
 
 # --- VERIFICAÇÃO SE TRATA-SE DA ROTA ADMINISTRATIVA SECRETA ---
 params = st.query_params
 if "admin" in params and params["admin"] == "true":
     st.title("🛡️ Reda1000IA — Painel Admin Secreto")
-    st.caption("Painel restrito para monitoramento de métricas do Micro SaaS em tempo real.")
-    
     senha_admin = st.text_input("Insira a Senha Mestre Administrativa:", type="password")
     
     if senha_admin == "reda1000admin@2026":
         st.success("Acesso autorizado!")
         st.markdown("---")
+        col_adm1, col_adm2, col_adm3 = st.columns(3)
+        col_adm1.metric("Total de Usuários Cadastrados", "1.248 alunos", "+14%")
+        col_adm2.metric("Taxa de Conversão Viral", "42,3%", "Loop active")
+        col_adm3.metric("Faturamento Estimado (MRR)", "R$ 4.186,00", "Stripe Live")
         
-        with st.spinner("Puxando métricas consolidadas do banco de dados..."):
-            st.subheader("📈 Crescimento de Usuários e Performance Viral")
-            
-            col_adm1, col_adm2, col_adm3 = st.columns(3)
-            col_adm1.metric("Total de Usuários Cadastrados", "1.248 alunos", "+14% esta semana")
-            col_adm2.metric("Taxa de Conversão Viral (Indicações)", "42,3%", "Loop active")
-            col_adm3.metric("Faturamento Estimado (MRR)", "R$ 4.186,00", "Stripe Live")
-            
-            st.markdown("<br>", unsafe_allow_html=True)
-            st.subheader("🎯 Códigos de Indicação Mais Usados (Top Referrals)")
-            
-            dados_ranking = [
-                {"Ranking": "1º", "Código de Indicação": "REDA1K", "Alunos Trazidos": 142, "Status": "Ativo / Influenciador"},
-                {"Ranking": "2º", "Código de Indicação": "ENEM900", "Alunos Trazidos": 89, "Status": "Ativo"},
-                {"Ranking": "3º", "Código de Indicação": "MEDICINA26", "Alunos Trazidos": 54, "Status": "Ativo"},
-                {"Ranking": "4º", "Código de Indicação": "NOTAMAXIMA", "Alunos Trazidos": 31, "Status": "Ativo"},
-                {"Ranking": "5º", "Código de Indicação": "FUVEST100", "Alunos Trazidos": 12, "Status": "Ativo"}
-            ]
-            st.table(dados_ranking)
-            
-            st.markdown("<br>", unsafe_allow_html=True)
-            st.subheader("📊 Gráfico de Cadastro Diário (Últimos 7 dias)")
-            st.bar_chart([12, 19, 15, 28, 34, 41, 56])
-            
+        dados_ranking = [
+            {"Ranking": "1º", "Código de Indicação": "REDA1K", "Alunos Trazidos": 142, "Status": "Ativo / Influenciador"},
+            {"Ranking": "2º", "Código de Indicação": "ENEM900", "Alunos Trazidos": 89, "Status": "Ativo"}
+        ]
+        st.table(dados_ranking)
     elif senha_admin != "":
         st.error("Senha incorreta. Acesso negado.")
-        
     st.stop()
 
-# --- TELA DE AUTENTICAÇÃO PADRÃO (ALUNO) ---
+# --- TELA DE AUTENTICAÇÃO PADRÃO (ALUNO DESLOGADO) ---
 elif not st.session_state.logged_in:
-    
-    st.markdown(f'''
-        <div class="logo-container">
-            <img src="{LOGO_URL}" class="logo-img" alt="Reda1000IA Logo">
-        </div>
-    ''', unsafe_allow_html=True)
+    st.markdown(f'<div class="logo-container"><img src="{LOGO_URL}" class="logo-img" alt="Reda1000IA Logo"></div>', unsafe_allow_html=True)
     
     st.markdown('''
         <div class="ticker-wrapper">
@@ -271,23 +288,11 @@ elif not st.session_state.logged_in:
                 <div class="ticker-item">✨ <b>Clara Amaral.</b> nota <b>850+</b> usando a Reda1000IA</div>
                 <div class="ticker-item">🎯 <b>Matheus S.</b> alcançou nota <b>980</b> no ENEM!</div>
                 <div class="ticker-item">🚀 <b>Ana Clara</b> subiu de 600 para <b>920</b> em 2 semanas!</div>
-                <div class="ticker-item">🔥 <b>João Pedro</b> garantiu <b>940</b> na redação do TJ-SP!</div>
-                <div class="ticker-item">✨ <b>Carla M.</b> nota <b>900+</b> usando a Reda1000IA</div>
-                <div class="ticker-item">🎯 <b>Lucas F.</b> nota <b>960</b> com nosso método!</div>
-                <div class="ticker-item">🚀 <b>Beatriz G.</b> nota <b>940</b> na Fuvest!</div>
-                <div class="ticker-item">🚀 <b>Carolina F.</b> subiu de 410 para <b>880</b> em 3 semanas!</div>
             </div>
         </div>
     ''', unsafe_allow_html=True)
     
-    st.markdown('''
-        <div class="urgency-box">
-            <p class="urgency-text">
-                ⚠️ RESTAM APENAS <b>14 VAGAS</b> COM ACESSO GRATUITO NESTA SEMANA.<br>
-                <small>A oferta de lançamento encerra hoje às 23:59.</small>
-            </p>
-        </div>
-    ''', unsafe_allow_html=True)
+    st.markdown('<div class="urgency-box"><p class="urgency-text">⚠️ RESTAM APENAS 14 VAGAS COM ACESSO GRATUITO NESTA SEMANA.</p></div>', unsafe_allow_html=True)
     
     _, col_central, _ = st.columns([1, 1.6, 1])
     
@@ -295,14 +300,12 @@ elif not st.session_state.logged_in:
         if st.session_state.tela_atual == "login":
             st.markdown('<div class="login-card">', unsafe_allow_html=True)
             st.markdown('<h3 style="text-align:center; color:#1e3c72; margin-top:0;">🔒 Entrar na Plataforma</h3>', unsafe_allow_html=True)
-            
             u_login = st.text_input("E-mail", key="u_log", placeholder="estudante@email.com")
             p_login = st.text_input("Senha", type="password", key="p_log", placeholder="Digite sua senha")
             
             if st.button("ACESSAR MINHA ÁREA", type="primary", key="btn_l"):
-                payload = {"username": u_login, "password": p_login}
                 try:
-                    res = requests.post(f"{API_BASE_URL}/auth/login", data=payload)
+                    res = requests.post(f"{API_BASE_URL}/auth/login", data={"username": u_login, "password": p_login})
                     if res.status_code == 200:
                         st.session_state.token = res.json()["access_token"]
                         st.session_state.logged_in = True
@@ -313,7 +316,6 @@ elif not st.session_state.logged_in:
                     st.error("⚠️ Servidor offline. Tente em instantes.")
             st.markdown('</div>', unsafe_allow_html=True)
             
-            st.markdown('<br>', unsafe_allow_html=True)
             if st.button("Não tem uma conta? Cadastre-se gratuitamente aqui", key="ir_para_cadastro"):
                 st.session_state.tela_atual = "cadastro"
                 st.rerun()
@@ -321,7 +323,6 @@ elif not st.session_state.logged_in:
         elif st.session_state.tela_atual == "cadastro":
             st.markdown('<div class="login-card">', unsafe_allow_html=True)
             st.markdown('<h3 style="text-align:center; color:#1e3c72; margin-top:0;">✨ Criar Conta Grátis</h3>', unsafe_allow_html=True)
-            
             n_cad = st.text_input("Nome", placeholder="Seu nome completo")
             e_cad = st.text_input("E-mail", placeholder="seu.email@escola.com")
             s_cad = st.text_input("Senha", type="password", placeholder="Crie uma senha forte")
@@ -329,16 +330,11 @@ elif not st.session_state.logged_in:
             
             if st.button("GARANTIR MINHA VAGA AGORA", key="btn_c"):
                 if n_cad and e_cad and s_cad:
-                    payload = {
-                        "name": n_cad, 
-                        "email": e_cad, 
-                        "password": s_cad,
-                        "referred_by_code": ref_cad.strip() if ref_cad.strip() else None
-                    }
+                    payload = {"name": n_cad, "email": e_cad, "password": s_cad, "referred_by_code": ref_cad.strip() if ref_cad.strip() else None}
                     try:
                         res = requests.post(f"{API_BASE_URL}/auth/register", json=payload)
                         if res.status_code == 201:
-                            st.success("✨ Vaga garantida com sucesso! Faça o login usando seus dados.")
+                            st.success("✨ Vaga garantida! Faça seu login.")
                             st.session_state.tela_atual = "login"
                             st.rerun()
                         else:
@@ -349,15 +345,13 @@ elif not st.session_state.logged_in:
                     st.warning("⚠️ Preencha todos os campos obrigatórios.")
             st.markdown('</div>', unsafe_allow_html=True)
             
-            st.markdown('<br>', unsafe_allow_html=True)
             if st.button("Já tem uma conta? Clique aqui para entrar", key="ir_para_login"):
                 st.session_state.tela_atual = "login"
                 st.rerun()
 
-# --- ÁREA LOGADA DA PLATAFORMA ---
+# --- ÁREA LOGADA DA PLATAFORMA (ALUNO AUTENTICADO) ---
 else:
     headers = {"Authorization": f"Bearer {st.session_state.token}"}
-    
     try:
         response = requests.get(f"{API_BASE_URL}/dashboard", headers=headers)
         if response.status_code == 200:
@@ -373,13 +367,7 @@ else:
     metrics = dash_data.get("metrics", {})
     share_marketing = dash_data.get("share_marketing", {})
     
-    # INJEÇÃO DA LOGO OFICIAL NO TOPO DA ÁREA LOGADA DO ALUNO
-    st.markdown(f'''
-        <div class="logo-container-internal">
-            <img src="{LOGO_URL}" style="width:100%; height:auto;" alt="Reda1000IA">
-        </div>
-    ''', unsafe_allow_html=True)
-    
+    st.markdown(f'<div class="logo-container-internal"><img src="{LOGO_URL}" style="width:100%; height:auto;" alt="Reda1000IA"></div>', unsafe_allow_html=True)
     st.subheader("📝 Painel de Treinamento e Métricas Inteligentes")
     
     c1, c2, c3, c4, c5 = st.columns([2, 1, 1, 2, 1])
@@ -397,7 +385,6 @@ else:
             st.rerun()
 
     st.markdown("---")
-    
     col_share_esq, col_share_dir = st.columns(2)
     with col_share_esq:
         st.markdown(f'''
@@ -430,13 +417,10 @@ else:
         st.line_chart([e["score"] for e in history])
 
     st.markdown("---")
-    
-    # LABORATÓRIO DE REDAÇÃO
     st.subheader("✍️ Laboratório de Redação")
     
     if not is_premium and profile.get("credits", 0) <= 0:
         st.error("🚨 Seus créditos de correção acabaram!")
-        st.warning("Para continuar evoluindo e garantir sua nota máxima, escolha um dos planos com ofertas imperdíveis logo abaixo e garanta acesso imediato sem limites.")
     else:
         try:
             themes_res = requests.get(f"{API_BASE_URL}/themes")
@@ -465,66 +449,6 @@ else:
                     except:
                         st.error("Erro de comunicação com o servidor.")
 
-    # CARDS COM OFERTAS IRRESISTÍVEIS (BLINDADOS COM SUBSTITUIÇÃO SEGURA)
+    # 3. RENDERIZAÇÃO SEGURA DA PÁGINA DE PREÇOS CASO NÃO SEJA PREMIUM
     if not is_premium:
-        st.markdown("---")
-        st.markdown("<h2 style='text-align:center; color:#1e3c72;'>👑 Destrave o Seu Potencial Máximo Rumo ao 1000</h2>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align:center; color:#4a5568; margin-bottom:30px;'>Não arrisque seu futuro estudando com correções demoradas. Escolha o plano ideal e conquiste sua aprovação hoje.</p>", unsafe_allow_html=True)
-        
-        raw_html_pricing = """
-            <div class="pricing-grid">
-                <div class="pricing-card">
-                    <h3 style="color:#2d3748; margin-bottom:5px;">Plano Mensal</h3>
-                    <p style="color:#718096; font-size:0.85rem; margin-top:0;">Ideal para testar o método</p>
-                    <div class="pricing-price">R$ 39,90<small>/mês</small></div>
-                    <ul class="pricing-features">
-                        <li>Correções <b>Ilimitadas</b> de Redação</li>
-                        <li>Feedback por Competências</li>
-                        <li>Microaulas de Gramática IA</li>
-                        <li>Dashboard de Evolução Completo</li>
-                    </ul>
-                    <a href="CHAVE_STRIPE" target="_blank" style="text-decoration:none;">
-                        <button style="background:#4a5568; color:white; border:none; padding:12px; width:100%; border-radius:10px; font-weight:bold; cursor:pointer;">ASSINAR AGORA</button>
-                    </a>
-                </div>
-                
-                <div class="pricing-card featured">
-                    <div class="badge-featured">Mais Vendido / Economize 40%</div>
-                    <h3 style="color:#1e3c72; margin-bottom:5px; padding-top:10px;">Plano Anual</h3>
-                    <p style="color:#718096; font-size:0.85rem; margin-top:0;">Preparação Completa de Elite</p>
-                    <div class="pricing-price">R$ 23,90<small>/mês</small></div>
-                    <p style="color:#e53e3e; font-size:0.8rem; font-weight:bold; margin-top:-10px;">Cobrado anualmente por R$ 286,80</p>
-                    <ul class="pricing-features">
-                        <li><b>Tudo do plano Mensal</b></li>
-                        <li>Acesso Prioritário à API (Sem Filas)</li>
-                        <li>Trilha Personalizada de Aprendizado</li>
-                        <li>Biblioteca Completa de Repertórios</li>
-                        <li>Suporte do IA Tutor Premium 24/7</li>
-                    </ul>
-                    <a href="CHAVE_STRIPE" target="_blank" style="text-decoration:none;">
-                        <button style="background:linear-gradient(45deg, #ff416c, #ff4b2b); color:white; border:none; padding:14px; width:100%; border-radius:10px; font-weight:bold; cursor:pointer; box-shadow: 0 4px 15px rgba(255,65,108,0.35);">QUERO SER PREMIUM</button>
-                    </a>
-                </div>
-                
-                <div class="pricing-card">
-                    <h3 style="color:#2d3748; margin-bottom:5px;">Plano Trimestral</h3>
-                    <p style="color:#718096; font-size:0.85rem; margin-top:0;">Foco Intensivo de Reta Final</p>
-                    <div class="pricing-price">R$ 32,90<small>/mês</small></div>
-                    <p style="color:#718096; font-size:0.8rem; margin-top:-10px;">Cobrado a cada 3 meses (R$ 98,70)</p>
-                    <ul class="pricing-features">
-                        <li>Correções <b>Ilimitadas</b> de Redação</li>
-                        <li>Feedback por Competências</li>
-                        <li>Microaulas de Gramática IA</li>
-                        <li>Acesso à Biblioteca Básica</li>
-                    </ul>
-                    <a href="CHAVE_STRIPE" target="_blank" style="text-decoration:none;">
-                        <button style="background:#4a5568; color:white; border:none; padding:12px; width:100%; border-radius:10px; font-weight:bold; cursor:pointer;">ASSINAR AGORA</button>
-                    </a>
-                </div>
-            </div>
-            <p style="text-align:center; color:#718096; font-size:0.85rem; margin-top:30px;">🔒 Pagamento 100% Seguro via Stripe. Cancele quando quiser sem multas.</p>
-        """
-        
-        # Injeta dinamicamente a URL correta sem chance de quebras de aspas simples ou duplas
-        final_html = raw_html_pricing.replace("CHAVE_STRIPE", STRIPE_CHECKOUT_URL)
-        st.markdown(final_html, unsafe_allow_html=True)
+        render_pricing_table(STRIPE_CHECKOUT_URL)
