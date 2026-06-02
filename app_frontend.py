@@ -15,7 +15,7 @@ else:
 STRIPE_CHECKOUT_URL = "https://buy.stripe.com/test_8x25kDfp73cqcfwdOQafS00"
 
 # URL Raw Oficial do seu GitHub
-LOGO_URL = "https://raw.githubusercontent.com/jnuslicitacao-bit/reda1000-ia/main/logo.png" 
+LOGO_URL = "https://raw.githubusercontent.com/jnuslicitacao-bit/reda1000-ia/main/logo.png"
 
 # Inicializa variáveis de estado de sessão do Streamlit
 if "token" not in st.session_state:
@@ -26,35 +26,35 @@ if "tela_atual" not in st.session_state:
     st.session_state.tela_atual = "login"
 
 # --- INJEÇÃO DE DESIGN PREMIUM COMPLETO ---
-st.markdown(f"""
+st.markdown("""
     <style>
-        .stApp {{
+        .stApp {
             background: linear-gradient(135deg, #f8f9fc 0%, #e2e8f0 100%);
-        }}
+        }
         
         /* CONTAINER DA LOGO */
-        .logo-container {{
+        .logo-container {
             text-align: center;
             padding: 20px 0 0px 0;
             margin: 0 auto;
             max-width: 450px;
-        }}
-        .logo-img {{
+        }
+        .logo-img {
             width: 100%;
             height: auto;
             max-height: 280px;
             object-fit: contain;
-        }}
+        }
         
         /* CONTAINER DA LOGO INTERNA (MENOR) */
-        .logo-container-internal {{
+        .logo-container-internal {
             text-align: left;
             padding: 10px 0;
             max-width: 180px;
-        }}
+        }
         
         /* CARROSSEL DE PROVA SOCIAL */
-        .ticker-wrapper {{
+        .ticker-wrapper {
             width: 100%;
             overflow: hidden;
             background: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%);
@@ -62,28 +62,28 @@ st.markdown(f"""
             margin-bottom: 25px;
             border-radius: 50px;
             box-shadow: 0 4px 12px rgba(30, 60, 114, 0.15);
-        }}
-        .ticker {{
+        }
+        .ticker {
             display: flex;
             white-space: nowrap;
             animation: ticker-animation 55s linear infinite;
-        }}
-        .ticker-item {{
+        }
+        .ticker-item {
             color: white;
             padding: 0 45px;
             font-size: 0.95rem;
             font-weight: 500;
-        }}
-        .ticker-item b {{
+        }
+        .ticker-item b {
             color: #deff9a;
-        }}
-        @keyframes ticker-animation {{
-            0% {{ transform: translateX(100%); }}
-            100% {{ transform: translateX(-100%); }}
-        }}
+        }
+        @keyframes ticker-animation {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
         
         /* BOX DE URGÊNCIA/ESCASSEZ */
-        .urgency-box {{
+        .urgency-box {
             background-color: #fff5f5;
             border-left: 5px solid #ff416c;
             padding: 15px;
@@ -92,43 +92,43 @@ st.markdown(f"""
             margin: 10px auto 30px auto;
             max-width: 600px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-        }}
-        .urgency-text {{
+        }
+        .urgency-text {
             color: #c53030;
             font-weight: 700;
             font-size: 1.05rem;
             margin: 0;
-        }}
+        }
         
         /* CARD DE LOGIN E FORMULÁRIOS */
-        .login-card {{
+        .login-card {
             background-color: #ffffff;
             padding: 40px;
             border-radius: 24px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.06);
             border: 1px solid #edf2f7;
             margin-top: 10px !important;
-        }}
+        }
         
         /* CAIXA DE CRESCIMENTO (REFERRAL) NA ÁREA LOGADA */
-        .referral-box {{
+        .referral-box {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 25px;
             border-radius: 18px;
             box-shadow: 0 10px 20px rgba(118, 75, 162, 0.15);
             margin-bottom: 25px;
-        }}
+        }
         
-        /* GRID DE PRECIFICAÇÃO / CARDS DE OFERTA PREMUM */
-        .pricing-grid {{
+        /* GRID DE PRECIFICAÇÃO / CARDS DE OFERTA PREMIUM */
+        .pricing-grid {
             display: flex;
             gap: 20px;
             justify-content: center;
             flex-wrap: wrap;
             margin-top: 20px;
-        }}
-        .pricing-card {{
+        }
+        .pricing-card {
             background: white;
             border-radius: 20px;
             padding: 30px;
@@ -138,12 +138,12 @@ st.markdown(f"""
             border: 2px solid #e2e8f0;
             position: relative;
             transition: transform 0.3s ease;
-        }}
-        .pricing-card.featured {{
+        }
+        .pricing-card.featured {
             border-color: #2a5298;
             transform: scale(1.03);
-        }}
-        .badge-featured {{
+        }
+        .badge-featured {
             position: absolute;
             top: -15px;
             left: 50%;
@@ -155,37 +155,37 @@ st.markdown(f"""
             font-size: 0.8rem;
             font-weight: bold;
             text-transform: uppercase;
-        }}
-        .pricing-price {{
+        }
+        .pricing-price {
             font-size: 2.2rem;
             font-weight: 800;
             color: #1a202c;
             margin: 15px 0;
-        }}
-        .pricing-price small {{
+        }
+        .pricing-price small {
             font-size: 1rem;
             font-weight: 400;
             color: #718096;
-        }}
-        .pricing-features {{
+        }
+        .pricing-features {
             list-style: none;
             padding: 0;
             margin: 20px 0;
             text-align: left;
             font-size: 0.9rem;
             color: #4a5568;
-        }}
-        .pricing-features li {{
+        }
+        .pricing-features li {
             margin-bottom: 10px;
-        }}
-        .pricing-features li::before {{
+        }
+        .pricing-features li::before {
             content: "✓ ";
             color: #2b6cb0;
             font-weight: bold;
-        }}
+        }
         
         /* BOTÃO PRINCIPAL FORMULÁRIO */
-        div.stButton > button:first-child {{
+        div.stButton > button:first-child {
             background: linear-gradient(45deg, #1e3c72, #2a5298);
             color: white;
             border-radius: 12px;
@@ -196,21 +196,21 @@ st.markdown(f"""
             margin: 20px auto 0 auto;
             display: block;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        }}
-        div.stButton > button:first-child:hover {{
+        }
+        div.stButton > button:first-child:hover {
             transform: translateY(-1px);
             box-shadow: 0 8px 20px rgba(30, 60, 114, 0.25);
-        }}
+        }
 
-        @media (max-width: 768px) {{
-            .logo-container {{ max-width: 280px; padding-top: 10px; }}
-            .ticker-item {{ padding: 0 15px; font-size: 0.75rem; }}
-            .ticker-wrapper {{ border-radius: 20px; padding: 6px 0; margin-bottom: 15px; }}
-            .urgency-box {{ padding: 10px; margin-bottom: 20px; }}
-            .login-card {{ padding: 20px !important; border-radius: 16px; }}
-            .pricing-card {{ width: 100%; }}
-            .pricing-card.featured {{ transform: none; }}
-        }}
+        @media (max-width: 768px) {
+            .logo-container { max-width: 280px; padding-top: 10px; }
+            .ticker-item { padding: 0 15px; font-size: 0.75rem; }
+            .ticker-wrapper { border-radius: 20px; padding: 6px 0; margin-bottom: 15px; }
+            .urgency-box { padding: 10px; margin-bottom: 20px; }
+            .login-card { padding: 20px !important; border-radius: 16px; }
+            .pricing-card { width: 100%; }
+            .pricing-card.featured { transform: none; }
+        }
     </style>
 """, unsafe_allow_html=True)
 
@@ -417,7 +417,7 @@ else:
             st.toast("Texto copiado!", icon="📋")
 
     st.markdown("---")
-    st.subheader("📊 Gráfico de Desempenho")
+    st.subheader("📊 Gráfico de Desemehno")
     st.info(metrics.get("status_message", "Acompanhe suas notas"))
     
     m1, m2, m3 = st.columns(3)
@@ -432,7 +432,7 @@ else:
     st.markdown("---")
     
     # 2. LABORATÓRIO DE REDAÇÃO
-    st.subheader("✍ shrink Laboratório de Redação")
+    st.subheader("✍️ Laboratório de Redação")
     
     if not is_premium and profile.get("credits", 0) <= 0:
         st.error("🚨 Seus créditos de correção acabaram!")
@@ -471,7 +471,6 @@ else:
         st.markdown("<h2 style='text-align:center; color:#1e3c72;'>👑 Destrave o Seu Potencial Máximo Rumo ao 1000</h2>", unsafe_allow_html=True)
         st.markdown("<p style='text-align:center; color:#4a5568; margin-bottom:30px;'>Não arrisque seu futuro estudando com correções demoradas. Escolha o plano ideal e conquiste sua aprovação hoje.</p>", unsafe_allow_html=True)
         
-        # Estrutura HTML/CSS injetando os 3 cards de alta conversão
         st.markdown(f"""
             <div class="pricing-grid">
                 <div class="pricing-card">
