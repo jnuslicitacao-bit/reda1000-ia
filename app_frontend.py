@@ -24,14 +24,12 @@ if "logged_in" not in st.session_state:
 if "tela_atual" not in st.session_state:
     st.session_state.tela_atual = "login"
 
-# --- INJEÇÃO DE DESIGN PREMIUM COMPLETO (CSS TOTALMENTE ISOLADO) ---
+# --- INJEÇÃO DE ESTILOS CSS UNIFICADO NO TOPO ---
 st.markdown("""
     <style>
         .stApp {
             background: linear-gradient(135deg, #f8f9fc 0%, #e2e8f0 100%);
         }
-        
-        /* CONTAINER DA LOGO */
         .logo-container {
             text-align: center;
             padding: 20px 0 0px 0;
@@ -44,15 +42,11 @@ st.markdown("""
             max-height: 280px;
             object-fit: contain;
         }
-        
-        /* CONTAINER DA LOGO INTERNA (MENOR) */
         .logo-container-internal {
             text-align: left;
             padding: 10px 0;
             max-width: 180px;
         }
-        
-        /* CARROSSEL DE PROVA SOCIAL */
         .ticker-wrapper {
             width: 100%;
             overflow: hidden;
@@ -73,15 +67,11 @@ st.markdown("""
             font-size: 0.95rem;
             font-weight: 500;
         }
-        .ticker-item b {
-            color: #deff9a;
-        }
+        .ticker-item b { color: #deff9a; }
         @keyframes ticker-animation {
             0% { transform: translateX(100%); }
             100% { transform: translateX(-100%); }
         }
-        
-        /* BOX DE URGÊNCIA/ESCASSEZ */
         .urgency-box {
             background-color: #fff5f5;
             border-left: 5px solid #ff416c;
@@ -98,8 +88,6 @@ st.markdown("""
             font-size: 1.05rem;
             margin: 0;
         }
-        
-        /* CARD DE LOGIN E FORMULÁRIOS */
         .login-card {
             background-color: #ffffff;
             padding: 40px;
@@ -108,8 +96,6 @@ st.markdown("""
             border: 1px solid #edf2f7;
             margin-top: 10px !important;
         }
-        
-        /* CAIXA DE CRESCIMENTO (REFERRAL) NA ÁREA LOGADA */
         .referral-box {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -118,8 +104,6 @@ st.markdown("""
             box-shadow: 0 10px 20px rgba(118, 75, 162, 0.15);
             margin-bottom: 25px;
         }
-        
-        /* GRID DE PRECIFICAÇÃO / CARDS DE OFERTA PREMIUM */
         .pricing-grid {
             display: flex;
             gap: 20px;
@@ -137,9 +121,7 @@ st.markdown("""
             border: 2px solid #e2e8f0;
             position: relative;
         }
-        .pricing-card.featured {
-            border-color: #2a5298;
-        }
+        .pricing-card.featured { border-color: #2a5298; }
         .badge-featured {
             position: absolute;
             top: -15px;
@@ -159,11 +141,7 @@ st.markdown("""
             color: #1a202c;
             margin: 15px 0;
         }
-        .pricing-price small {
-            font-size: 1rem;
-            font-weight: 400;
-            color: #718096;
-        }
+        .pricing-price small { font-size: 1rem; font-weight: 400; color: #718096; }
         .pricing-features {
             list-style: none;
             padding: 0;
@@ -172,11 +150,7 @@ st.markdown("""
             font-size: 0.9rem;
             color: #4a5568;
         }
-        .pricing-features li {
-            margin-bottom: 10px;
-        }
-        
-        /* BOTÃO PRINCIPAL FORMULÁRIO */
+        .pricing-features li { margin-bottom: 10px; }
         div.stButton > button:first-child {
             background: linear-gradient(45deg, #1e3c72, #2a5298);
             color: white;
@@ -192,7 +166,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# --- FUNÇÃO ENCAPSULADA DE COMPARTILHAMENTO DE PREÇOS (CONVERSÃO SEGURA SEM VAZAMENTO) ---
+# --- FUNÇÃO DA TABELA DE PREÇOS (APENAS PARA ÁREA LOGADA FREE) ---
 def render_pricing_table(stripe_url):
     st.markdown("---")
     st.markdown("<h2 style='text-align:center; color:#1e3c72;'>👑 Destrave o Seu Potencial Máximo Rumo ao 1000</h2>", unsafe_allow_html=True)
@@ -254,8 +228,10 @@ def render_pricing_table(stripe_url):
     st.markdown(html_content, unsafe_allow_html=True)
 
 
-# --- VERIFICAÇÃO SE TRATA-SE DA ROTA ADMINISTRATIVA SECRETA ---
+# --- ORQUESTRADOR CENTRAL DE TELAS ---
 params = st.query_params
+
+# 1. Rota Administrativa Secreta
 if "admin" in params and params["admin"] == "true":
     st.title("🛡️ Reda1000IA — Painel Admin Secreto")
     senha_admin = st.text_input("Insira a Senha Mestre Administrativa:", type="password")
@@ -275,9 +251,8 @@ if "admin" in params and params["admin"] == "true":
         st.table(dados_ranking)
     elif senha_admin != "":
         st.error("Senha incorreta. Acesso negado.")
-    st.stop()
 
-# --- TELA DE AUTENTICAÇÃO PADRÃO (ALUNO DESLOGADO) ---
+# 2. Usuário Deslogado (Tela de Login / Cadastro Padrão)
 elif not st.session_state.logged_in:
     st.markdown(f'<div class="logo-container"><img src="{LOGO_URL}" class="logo-img" alt="Reda1000IA Logo"></div>', unsafe_allow_html=True)
     
@@ -349,7 +324,7 @@ elif not st.session_state.logged_in:
                 st.session_state.tela_atual = "login"
                 st.rerun()
 
-# --- ÁREA LOGADA DA PLATAFORMA (ALUNO AUTENTICADO) ---
+# 3. Usuário Logado (Painel de Treinamento Interno)
 else:
     headers = {"Authorization": f"Bearer {st.session_state.token}"}
     try:
@@ -421,6 +396,7 @@ else:
     
     if not is_premium and profile.get("credits", 0) <= 0:
         st.error("🚨 Seus créditos de correção acabaram!")
+        st.warning("Para continuar evoluindo e garantir sua nota máxima, escolha um dos planos com ofertas imperdíveis logo abaixo e garanta acesso imediato sem limites.")
     else:
         try:
             themes_res = requests.get(f"{API_BASE_URL}/themes")
@@ -449,6 +425,6 @@ else:
                     except:
                         st.error("Erro de comunicação com o servidor.")
 
-    # 3. EXIBE A TABELA DE PREÇOS NO RODAPÉ APENAS SE O USUÁRIO LOGADO NÃO FOR PREMIUM
+    # Seção de precificação injetada via função limpa do Python (Apenas para contas Free logadas)
     if not is_premium:
         render_pricing_table(STRIPE_CHECKOUT_URL)
