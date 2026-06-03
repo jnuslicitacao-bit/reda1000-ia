@@ -14,12 +14,19 @@ else:
 STRIPE_CHECKOUT_URL = "https://buy.stripe.com/test_8x25kDfp73cqcfwdOQafS00"
 LOGO_URL = "https://raw.githubusercontent.com/jnuslicitacao-bit/reda1000-ia/main/logo.png"
 
+# Inicialização segura dos estados de sessão do Streamlit
 if "token" not in st.session_state:
     st.session_state.token = None
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 if "tela_atual" not in st.session_state:
     st.session_state.tela_atual = "login"
+
+# ESTADOS ADMINISTRATIVOS DE SIMULAÇÃO (Padrão: Inativo)
+if "admin_simulando" not in st.session_state:
+    st.session_state.admin_simulando = False
+if "admin_plano_simulado" not in st.session_state:
+    st.session_state.admin_plano_simulado = "FREE"
 
 # ==============================================================================
 # 2. IDENTIDADE VISUAL E DESIGN (CSS Nativo Polido)
@@ -29,7 +36,6 @@ st.markdown("""
         .stApp {
             background: linear-gradient(135deg, #f8f9fc 0%, #e2e8f0 100%);
         }
-        /* CENTRALIZAÇÃO ABSOLUTA DA LOGO */
         .logo-container {
             text-align: center;
             padding: 25px 0;
@@ -42,7 +48,6 @@ st.markdown("""
             max-height: 260px;
             object-fit: contain;
         }
-        /* CARROSSEL DE PROVA SOCIAL */
         .ticker-wrapper {
             width: 100%;
             overflow: hidden;
@@ -68,7 +73,6 @@ st.markdown("""
             0% { transform: translateX(100%); }
             100% { transform: translateX(-100%); }
         }
-        /* CAIXA DE ESCASSEZ DE MARKETING */
         .urgency-box {
             background-color: #fff5f5;
             border-left: 5px solid #ff416c;
@@ -83,7 +87,6 @@ st.markdown("""
             font-weight: 700;
             font-size: 1.05rem;
         }
-        /* DESTACAMENTO DO LABORATÓRIO DE REDAÇÃO */
         .essay-laboratory-box {
             background-color: #ffffff;
             padding: 30px;
@@ -92,7 +95,6 @@ st.markdown("""
             box-shadow: 0 10px 25px rgba(30, 60, 114, 0.08);
             margin-bottom: 30px;
         }
-        /* CUSTOMIZAÇÃO DOS BOTÕES */
         div.stButton > button:first-child {
             background: linear-gradient(45deg, #1e3c72, #2a5298);
             color: white;
@@ -118,8 +120,25 @@ def tela_admin():
     senha_admin = st.text_input("Insira a Senha Mestre Administrativa:", type="password")
     
     if senha_admin == "reda1000admin@2026":
-        st.success("Acesso autorizado!")
+        st.success("Acesso autorizado de Administrador!")
         st.markdown("---")
+        
+        # --- BLOCO DE CONTROLE DE ACESSO EXCLUSIVO DO ADMIN ---
+        st.subheader("👁️ Ferramenta de Simulação de Visão do Usuário")
+        st.info("Ative a simulação abaixo para forçar o app a renderizar exatamente o que um tipo de aluno vê.")
+        
+        simular = st.toggle("Ativar Modo Simulação Visual", value=st.session_state.admin_simulando)
+        st.session_state.admin_simulando = simular
+        
+        if simular:
+            plano_escolhido = st.radio("Escolha qual Dashboard testar:", ["FREE", "PREMIUM"], index=0 if st.session_state.admin_plano_simulado == "FREE" else 1)
+            st.session_state.admin_plano_simulado = plano_escolhido
+            st.success(f"Modo de testes ativo! Ao fechar esta aba ou acessar o app comum, você verá a visão **{plano_escolhido}**.")
+        else:
+            st.warning("Simulação desativada. O app lerá o plano real do banco de dados.")
+            
+        st.markdown("---")
+        st.subheader("📈 Métricas Macrossistêmicas Globais")
         col_adm1, col_adm2, col_adm3 = st.columns(3)
         col_adm1.metric("Total de Usuários Cadastrados", "1.248 alunos")
         col_adm2.metric("Conversão Direta Premium", "18,4%")
@@ -210,6 +229,16 @@ def tela_dashboard():
     profile = dash_data.get("user_profile", {})
     metrics = dash_data.get("metrics", {})
     
+    # --- INTERVENÇÃO DA INTELIGÊNCIA ADMINISTRATIVA (OVERRIDE DE PLANO) ---
+    if st.session_state.admin_simulando:
+        plano_atual = st.session_state.admin_plano_simulado
+        is_premium = (plano_atual == "PREMIUM")
+        # Banner informativo superior avisando o admin que ele está em modo simulado
+        st.warning(f"🛠️ **Modo Admin Ativo**: Você está visualizando a dashboard simulando o plano **{plano_atual}**.")
+    else:
+        plano_atual = profile.get("plan", "FREE")
+        is_premium = (plano_atual == "PREMIUM")
+        
     # LOGO CENTRALIZADA NO TOPO DO PAINEL DO ESTUDANTE
     st.markdown(f'<div class="logo-container"><img src="{LOGO_URL}" class="logo-img" alt="Reda1000IA"></div>', unsafe_allow_html=True)
     
@@ -218,19 +247,19 @@ def tela_dashboard():
     with c2: st.metric("XP Obtido", f"{profile.get('xp', 0)} XP")
     with c3: st.metric("🔥 Ofensiva", f"{profile.get('streak', 0)}d")
     
-    is_premium = profile.get("plan") == "PREMIUM"
     creditos_visiveis = "Ilimitados" if is_premium else f"{profile.get('credits', 0)} rest."
-    with c4: st.metric("Plano Ativo", profile.get("plan", "FREE"), creditos_visiveis)
+    with c4: st.metric("Plano Ativo", plano_atual, creditos_visiveis)
     with c5:
         if st.button("Sair da Conta"):
             st.session_state.token = None
             st.session_state.logged_in = False
+            st.session_state.admin_simulando = False # Desativa simulação ao deslogar
             st.rerun()
 
     st.markdown("---")
     
     # ==============================================================================
-    # PAYWALL DO GRÁFICO DE DESEMPENHO (Função bloqueada para usuários Free)
+    # PAYWALL DO GRÁFICO DE DESEMPENHO (Premium Only)
     # ==============================================================================
     st.subheader("📊 Gráfico de Evolução e Desempenho")
     
@@ -259,6 +288,7 @@ def tela_dashboard():
     st.markdown('<div class="essay-laboratory-box">', unsafe_allow_html=True)
     st.subheader("✍️ Laboratório de Redação")
     
+    # Regra de bloqueio de escrita baseada nos créditos reais ou na simulação administrada
     if not is_premium and profile.get("credits", 0) <= 0:
         st.error("🚨 Seus créditos de correção gratuita acabaram!")
         st.info("Faça o upgrade para o Premium logo abaixo para liberar o envio e ter correções instantâneas sem limites.")
